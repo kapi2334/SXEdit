@@ -1,11 +1,14 @@
+#pragma once
+
 #include <Windows.h>
-#include <winnt.h>
 
 namespace sxEditCore {
     class FontHandler {
     private:
         HFONT font;
-        LOGFONTA logFont; // trzymamy dane czcionki, by móc ją modyfikować
+        LOGFONTA logFont; // Keeping up font info to provide base for changes 
+        
+        COLORREF _fontColor;
 
         void recreateFont() {
             if (font) {
@@ -30,7 +33,7 @@ namespace sxEditCore {
         }
 
     public:
-        FontHandler(LPCSTR fontName, int size,
+        FontHandler(LPCSTR fontName, int size, COLORREF textColor = RGB(255,255,255),
                     int weight = FW_NORMAL, bool italic = false, bool underline = false,
                     bool strikeout = false,
                     int slopeX = 0, int slopeY = 0) {
@@ -52,6 +55,7 @@ namespace sxEditCore {
             strncpy_s(logFont.lfFaceName, fontName, LF_FACESIZE - 1);
 
             recreateFont();
+            _fontColor = textColor; 
         }
 
         ~FontHandler() {
@@ -60,10 +64,6 @@ namespace sxEditCore {
             }
         }
 
-        HFONT getFont() const {
-            return font;
-        }
-        
         //Sets up new font size
         void updateFontSize(int size){
             logFont.lfHeight = size;
@@ -85,6 +85,23 @@ namespace sxEditCore {
         void switchStrikeout(bool isStrikedout){
             logFont.lfStrikeOut= !logFont.lfStrikeOut;
             recreateFont();
+        }
+        void setColor(COLORREF newColor){
+            _fontColor = newColor;
+        }
+
+
+        HFONT getFont() const {
+            return font;
+        }
+        
+        //Returns size of a font 
+        int getSize(){
+            return logFont.lfHeight;
+        }
+        //Reutrns color of a font
+        COLORREF getTextColor(){
+            return _fontColor;
         }
 
     };

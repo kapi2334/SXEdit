@@ -1,10 +1,13 @@
-//Window logic handling f.e. drawing, getting keys etc.
-#include <iostream>
-#include <windows.h>
-#include <string.h>
-#include <winuser.h>
+#pragma once
+
+#include <Windows.h>
+#include "CursorHandler.h"
 #include "KeyActionHandler.h"
-#include "FontHandler.h"
+#include "FontHandler.h" 
+#include "WindowUpdateHandler.h"
+#include "SXException.h"
+#include "Data structures/DoublyLinkedList.h"
+
 namespace sxEditCore{
 
     class WindowsWindowLogic {
@@ -17,6 +20,9 @@ namespace sxEditCore{
             CursorHandler* _cursorHandler = nullptr;
             KeyActionHandler _keyHandler;
             FontHandler* _mainTextFont ;
+            UpdateHandler* _windowUpdateHandler = nullptr;
+            dataStructures::dlList _charList;
+
 
             HWND _windowHandle;
 
@@ -62,14 +68,26 @@ namespace sxEditCore{
                         minmax->ptMinTrackSize.y = 300;
                     }
                     case WM_KEYDOWN:{
-                        _keyHandler.registerPress(wParam,hwnd);
+                        _keyHandler.registerPress(wParam,_charList,hwnd);
                     }
                     case WM_PAINT:{
                         PAINTSTRUCT ps;
                         if(_cursorHandler){
-                            _cursorHandler ->drawCursor(ps);
+                            if(_windowUpdateHandler){
+
+                                //Call window's update function
+                                _windowUpdateHandler->Update(
+                                        _cursorHandler, //Cursor handler
+                                        _charList,      //Data list
+                                        ps,             //PAINTSRUCT
+                                        _mainTextFont //HFONT
+                                        );
+
+                            }else{
+                                throw new SXException("windowUpdateHandler: object is null.", _windowHandle);
+                            }
                         }else{
-                            MessageBoxA(hwnd,"Critical error: Unable to create cursor (nullptr).","Error occured",MB_ICONERROR|MB_OK);
+                            throw new SXException("Critical error: Unable to create cursor (nullptr).", _windowHandle);
                         }
                     }
                     default:{
@@ -100,6 +118,7 @@ namespace sxEditCore{
                 _className = "Main Window Class";
                 _windowInstance = instace;
                 _mainTextFont = new FontHandler("Arial", 12);
+                _charList = dataStructures::dlList();
         
             }
             //UserInput Constructor 
@@ -110,11 +129,13 @@ namespace sxEditCore{
                 _className = windowClassName;
                 _windowInstance = instace;
                 _mainTextFont = new FontHandler("Arial", 12);
+                _charList = dataStructures::dlList();
             }
             //Deconstructor
             ~WindowsWindowLogic(){
                 delete _cursorHandler;
                 delete _mainTextFont;
+                delete _windowUpdateHandler;
             }
 
             //Window creation
@@ -131,12 +152,14 @@ namespace sxEditCore{
                         _windowLength, _windowHeight,
                         nullptr, nullptr,
                         _windowInstance, this);
-                //if _windowHandle is nullptr return false
+               //Passing windowHandle to newly created objects
+               _windowUpdateHandler = new UpdateHandler(_windowHandle);
                _cursorHandler = new CursorHandler(_windowHandle);
                _keyHandler = KeyActionHandler(_cursorHandler);
                if(_cursorHandler == nullptr){
                     MessageBoxA(_windowHandle, "Critical error: Cursor creation failed.", "Error.", MB_ICONERROR|MB_OK);
                }
+                //if _windowHandle is nullptr return false
                return _windowHandle != nullptr; 
             }
             //Show created window

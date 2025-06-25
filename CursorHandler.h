@@ -1,7 +1,9 @@
+#pragma once
+
 #include <Windows.h>
 #include <iostream>
-#include <winuser.h>
 #include "SXException.h"
+
 namespace sxEditCore{
     class CursorHandler{
         private:
@@ -107,49 +109,24 @@ namespace sxEditCore{
             int getYPosition(){
                 return y;
             }
-            void redraw(){
-                InvalidateRect(_windowHandle,NULL,true);
-                UpdateWindow(_windowHandle);
-            }
 
-            void drawCursor(PAINTSTRUCT ps){
+            void drawCursor(HDC& deviceHandle){
                 std::cout<<"Drawing cursor...";
-                writeOutDebug();
-                HDC deviceHande = BeginPaint(_windowHandle, &ps);
+                //writeOutDebug();
                 HPEN cursorPen = CreatePen(PS_SOLID, 1,RGB(255,255,255));
-                HPEN oldPen = (HPEN) SelectObject(deviceHande, cursorPen);
+                HPEN oldPen = (HPEN) SelectObject(deviceHandle, cursorPen);
                 switch(type){
                     case 0:{
-                    Rectangle(deviceHande,x+offsetX,y+offsetY,(width+x+offsetX),(height+y+offsetY));
+                    Rectangle(deviceHandle,x+offsetX,y+offsetY,(width+x+offsetX),(height+y+offsetY));
                     break;
                     }
                     case 1:{
-                    Rectangle(deviceHande,x+offsetX,y+offsetY+(height-(width+x+offsetX)),(height+y+offsetY),(width+x+offsetX));
+                    Rectangle(deviceHandle,x+offsetX,y+offsetY+(height-(width+x+offsetX)),(height+y+offsetY),(width+x+offsetX));
                     break;
                     }
                 }
-                SelectObject(deviceHande, oldPen);
+                SelectObject(deviceHandle, oldPen);
                 DeleteObject(cursorPen);
-                EndPaint(_windowHandle, &ps);
-                redraw();
-            }
-            void drawLetter(char input,PAINTSTRUCT ps, HFONT& font){
-                //Conversion to null-terminated string
-                char tmp[2] = {input, '\0'};
-                HDC deviceHandle = BeginPaint(_windowHandle,&ps);
-                //If passed font is invalid, create new one 
-                if(font == NULL){
-                    throw new SXException("Font passed to function is invalid, used generic one insted.",_windowHandle);
-                }
-                //Setting new font
-                HFONT oldFont = (HFONT) SelectObject(deviceHandle,font);
-                //Writing out text
-                TextOutA(deviceHandle,x,y,tmp,1);
-                //Setting back old font
-                SelectObject(deviceHandle, oldFont);
-                EndPaint(_windowHandle,&ps);
-                //Move cursor to next position.
-                moveCursorByX(1);
             }
     };
 

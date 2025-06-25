@@ -1,4 +1,7 @@
-#include <winuser.h>
+#pragma once
+#include <string>
+#include <windows.h>
+#include <exception>
 namespace sxEditCore{
     class SXException: public std::exception{
         private:

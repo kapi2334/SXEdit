@@ -1,8 +1,9 @@
+#pragma once
+
 #include <Windows.h>
-#include <string>
-#include <wchar.h>
-#include <winuser.h>
 #include "CursorHandler.h"
+#include "Data structures/DoublyLinkedList.h"
+
 namespace sxEditCore{
     class KeyActionHandler{
         private:
@@ -22,7 +23,7 @@ namespace sxEditCore{
                 return *tmp;
             }
         public:
-            void registerPress(WPARAM key, HWND hwnd){
+            void registerPress(WPARAM key,dataStructures::dlList& list, HWND hwnd){
                 try{
                 switch(key){
                     //case 0x09: //TAB
@@ -60,7 +61,7 @@ namespace sxEditCore{
                 //Normal button clicked
                 if(key >= 0x30 && key <= 0x5A){
                     WCHAR tmp = getCharFromWparam(key);
-                    
+                    list.pushBack(tmp);  
                 }
                 }catch(const SXException& e){
                     MessageBoxA(hwnd,e.what(),"Error occured", MB_ICONERROR|MB_OK);

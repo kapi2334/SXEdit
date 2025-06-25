@@ -1,7 +1,6 @@
-#include "Window.h"
-#include "Data structures/DoublyLinkedList.h"
-#include <stdexcept>
-
+#include <Windows.h>
+#include "SXException.h"
+#include "Window.h" 
 #if defined(_WIN64) || defined(_WIN32)
 
     int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR,int nCmdShow){
