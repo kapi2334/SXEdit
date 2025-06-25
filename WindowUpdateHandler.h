@@ -3,6 +3,8 @@
 #include <Windows.h>
 #include "CursorHandler.h"
 #include "Data structures/DoublyLinkedList.h"
+#include "FontHandler.h"
+
 
 namespace sxEditCore{
 

@@ -1,4 +1,4 @@
-
+#pragma once
 #include <cstdlib>
 namespace sxEditCore::dataStructures{
 
@@ -22,10 +22,6 @@ namespace sxEditCore::dataStructures{
             int cacheTreshold = 20;
             dlCachedNode cachedNode; 
             
-            //Char that is returned(displayed) when error occured in node (fe nullptr was returned).
-            char errorChar = '#';
-
-            int size; //Acual size of this list
             dlNode *First; //Pointer to first node (head)
             dlNode *Last; //Pointer to last node (tail) 
 
@@ -110,6 +106,11 @@ namespace sxEditCore::dataStructures{
             }
 
         public:
+            //Char that is returned(displayed) when error occured in node (fe nullptr was returned).
+            char errorChar = '#';
+
+            int size; //Acual size of this list
+                      //
             dlList(){
                 size = 0; 
                 First = nullptr;
