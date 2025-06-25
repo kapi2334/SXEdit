@@ -33,6 +33,7 @@ namespace sxEditCore {
         }
 
     public:
+        int _spaceBetweenChars = 15; //Put it as font variable
         FontHandler(LPCSTR fontName, int size, COLORREF textColor = RGB(255,255,255),
                     int weight = FW_NORMAL, bool italic = false, bool underline = false,
                     bool strikeout = false,

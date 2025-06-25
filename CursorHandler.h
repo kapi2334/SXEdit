@@ -13,12 +13,6 @@ namespace sxEditCore{
             /* 0 = |
              * 1 = _
              * */
-            const int width = 2;
-            const int height = 18;
-            const int offsetX = 10;
-            const int offsetY = 10;
-            int _windowmaxX = 0;
-            int _windowmaxY = 0;
             HWND  _windowHandle;
             RECT _windowRect; //Client field react
                                //
@@ -39,6 +33,12 @@ namespace sxEditCore{
                 _windowmaxY = _windowRect.bottom - (_windowRect.top + height + offsetY);
             }
         public:
+            int width = 2;
+            int height = 18;
+            int offsetX = 10;
+            int offsetY = 10;
+            int _windowmaxX = 0;
+            int _windowmaxY = 0;
             CursorHandler(HWND& windowHandle){
                 this->_windowHandle = windowHandle;
                 if(_windowHandle == nullptr) {
@@ -97,7 +97,7 @@ namespace sxEditCore{
                 int effectiveNewY =  this->y + (y*height);
                 //Checking if cursor will not go out of the window filed.
                 if( effectiveNewY >= 0 && effectiveNewY <= _windowmaxY){
-                    std::cout<<"\n-------------Effective new Y: " << effectiveNewY<<"\n";
+                    //std::cout<<"\n-------------Effective new Y: " << effectiveNewY<<"\n";
                     this->y = effectiveNewY; 
                     return true;
                 }
@@ -111,7 +111,7 @@ namespace sxEditCore{
             }
 
             void drawCursor(HDC& deviceHandle){
-                std::cout<<"Drawing cursor...";
+                //std::cout<<"Drawing cursor...";
                 //writeOutDebug();
                 HPEN cursorPen = CreatePen(PS_SOLID, 1,RGB(255,255,255));
                 HPEN oldPen = (HPEN) SelectObject(deviceHandle, cursorPen);

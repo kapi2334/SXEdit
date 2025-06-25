@@ -77,7 +77,6 @@ namespace sxEditCore{
 
                                 //Call window's update function
                                 _windowUpdateHandler->Update(
-                                        _cursorHandler, //Cursor handler
                                         _charList,      //Data list
                                         ps,             //PAINTSRUCT
                                         _mainTextFont //HFONT
@@ -117,7 +116,7 @@ namespace sxEditCore{
                 _windowName = "Window";
                 _className = "Main Window Class";
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 12);
+                _mainTextFont = new FontHandler("Arial", 24);
                 _charList = dataStructures::dlList();
         
             }
@@ -128,7 +127,7 @@ namespace sxEditCore{
                 _windowName = windowName;
                 _className = windowClassName;
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 12);
+                _mainTextFont = new FontHandler("Arial", 24);
                 _charList = dataStructures::dlList();
             }
             //Deconstructor
@@ -153,12 +152,12 @@ namespace sxEditCore{
                         nullptr, nullptr,
                         _windowInstance, this);
                //Passing windowHandle to newly created objects
-               _windowUpdateHandler = new UpdateHandler(_windowHandle);
                _cursorHandler = new CursorHandler(_windowHandle);
                _keyHandler = KeyActionHandler(_cursorHandler);
                if(_cursorHandler == nullptr){
                     MessageBoxA(_windowHandle, "Critical error: Cursor creation failed.", "Error.", MB_ICONERROR|MB_OK);
                }
+               _windowUpdateHandler = new UpdateHandler(_windowHandle, _cursorHandler);
                 //if _windowHandle is nullptr return false
                return _windowHandle != nullptr; 
             }
