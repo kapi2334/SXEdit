@@ -17,14 +17,10 @@ namespace sxEditCore{
             void drawCursor(HDC& hdc){
                 _cursor->drawCursor(hdc); 
             }
-            void drawLetters(HWND& windowHandle, dataStructures::dlList& inputList,HDC& deviceHandle,FontHandler*& fontHandler){
+            void drawLetters(dataStructures::dlList& inputList,HDC& deviceHandle,FontHandler*& fontHandler){
                 HFONT font = fontHandler->getFont();
                 //Conversion to null-terminated string
                 char tmp[2] = { 0 };
-                //If passed font is invalid, create new one 
-                if(font == NULL){
-                    throw new SXException("Font passed to function is invalid, used generic one insted.",_windowHandle);
-                }
                 //Setting new font
                 HFONT oldFont = (HFONT) SelectObject(deviceHandle,font);
                 //Setting up colors
@@ -32,15 +28,17 @@ namespace sxEditCore{
                 SetBkMode(deviceHandle, TRANSPARENT); //Transparent text background
 
                 //Writing out text
-                for(int i = 0; i < inputList.size; i++){
+                std::cout << "Text: ";
+                for(int i = 0; i < inputList.getSize(); i++){
                     char buffer = inputList.get(i);
                     if(buffer == inputList.errorChar) break;
                     tmp[0] = buffer;
+                    tmp[1] = '\0';
                     SxPosition pos = _localGrid->calculatePos(i,fontHandler);
-                    //std::cout << "\n========\n" << "Text graphic position:\n X:  " << pos.x << "\nY: " << pos.y << "\n =============";
                     TextOutA(deviceHandle,pos.x,pos.y,tmp,1);
-                    //Move cursor to next position.
+                    std::cout << tmp;
                 }
+                std::cout << "|\n";
                 //Setting back old font
                 SelectObject(deviceHandle, oldFont);
             }
@@ -53,7 +51,7 @@ namespace sxEditCore{
                     << "X:" << _cursor->getXPosition() << 
                     "\nY:" << _cursor->getYPosition() << 
                     "\n Text info:" << 
-                    "\n List size: " << list.size <<
+                    "\n List size: " << list.getSize()<<
                     "\n Error char: " << list.errorChar <<
                     "\n End of stream.\n\n";
             }
@@ -70,7 +68,7 @@ namespace sxEditCore{
             void Update(dataStructures::dlList& textInputList, PAINTSTRUCT& ps,FontHandler*& font){
                 if(_windowHandle){
                     HDC deviceHandle = BeginPaint(_windowHandle,&ps);
-                    drawLetters(_windowHandle,textInputList, deviceHandle, font);
+                    drawLetters(textInputList, deviceHandle, font);
                     drawCursor(deviceHandle);
                     EndPaint(_windowHandle,&ps);
                     redraw(_windowHandle);

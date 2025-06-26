@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdlib>
+#include <iostream>
 namespace sxEditCore::dataStructures{
 
 
@@ -24,6 +25,8 @@ namespace sxEditCore::dataStructures{
             
             dlNode *First; //Pointer to first node (head)
             dlNode *Last; //Pointer to last node (tail) 
+
+            int size; //Acual size of this list
 
 
             /*It is used to obtain a node at a specific position - using the node stored in memory.
@@ -78,6 +81,7 @@ namespace sxEditCore::dataStructures{
                 dlNode* outNode = tryToCache(index);
                 if(outNode != nullptr){
                 //Success
+                    //std::cout << "Node from cashe returned: " << outNode->value<<"\n";
                     return outNode;
                 }
                 else{
@@ -85,9 +89,10 @@ namespace sxEditCore::dataStructures{
                     if(index <= size/2){
                     //Targeted node is closer to the front of the list 
                         outNode = First;
-                        for(int i = 0; i < (index - 1); i++){
+                        for(int i = 0; i < index; i++){
                             outNode = outNode->next;
                         }
+                      //  std::cout << "Node from front side returned: " << outNode->value<<"\n";
                         return outNode;
                         
                     
@@ -95,9 +100,10 @@ namespace sxEditCore::dataStructures{
                     else{
                     //Targeted node is closer to the end of the list
                         outNode = Last;
-                        for(int i = size - 1; i > (index - 1); i--){
+                        for(int i = size - 1; i > index; i--){
                             outNode = outNode->prev;
                         }
+                        //std::cout << "Node from back side returned: " << outNode->value<<"\n";
                         return outNode;
                     }
                 }
@@ -108,9 +114,6 @@ namespace sxEditCore::dataStructures{
         public:
             //Char that is returned(displayed) when error occured in node (fe nullptr was returned).
             char errorChar = '#';
-
-            int size; //Acual size of this list
-                      //
             dlList(){
                 size = 0; 
                 First = nullptr;
@@ -159,11 +162,24 @@ namespace sxEditCore::dataStructures{
                 cachedNode.index = size - 1;
                 return size - 1;
             }
+            char deleteNode(int index){
+                //Obtaining node to delete
+                dlNode* node = getNode(index);
+                //Prev node -> next = next node, next node -> prev = prev node
+                node->prev->next = node-> next;
+                node->next->prev = node->prev;
+                char delval = node->value;
+                delete node;
+                return delval;
+            }
             //Return value of node with specified index.
             char get(int index){ 
                 dlNode* out = getNode(index);
                 if(out == nullptr) return errorChar;
                 return out->value;
+            }
+            int getSize(){
+                return size;
             }
 
     }; 

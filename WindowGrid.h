@@ -54,6 +54,7 @@ namespace sxEditCore{
                     outX = outX/gridCell;
                     //Scaling out
                     outX *= gridCell;
+                    outX += cursor->offsetX;
                     outY *= gridCell;
                 }
                 SxPosition tmp(outX, outY);
