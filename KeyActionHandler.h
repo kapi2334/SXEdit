@@ -30,6 +30,8 @@ namespace sxEditCore{
                     //case 0x09: //TAB
                     case 0x0D: //ENTER
                         _windowUpdateHandler ->moveCursorByY(1);           
+                        _windowUpdateHandler->setCursorX(0);
+                        
                         list.pushBack('\n'); 
                     //Arrows
                     case 0x25: //LEFT

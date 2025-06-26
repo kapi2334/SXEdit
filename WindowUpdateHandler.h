@@ -31,6 +31,7 @@ namespace sxEditCore{
                 //Writing out text
                 std::cout << "Text: ";
                 SxPosition pos = SxPosition(_cursor->offsetX,_cursor->offsetY);
+                _localGrid->resetCharsInLineInformation();
                 for(int i = 0; i < inputList.getSize(); i++){
                     bool moveText = false; //Is '\n'
                     char buffer = inputList.get(i);
@@ -81,7 +82,13 @@ namespace sxEditCore{
                 _cursor->moveCursorByX(x * (_localGrid->getCellWidth()));
             }
             void moveCursorByY(int y){
-                _cursor->moveCursorByY(y);
+                _cursor->moveCursorByY(y*(_localGrid->getCellWidth()));
+            }
+            void setCursorX(int x){
+                _cursor->updateCursorX(x*(_localGrid->getCellWidth()));
+            }
+            void setCursorY(int y){
+                _cursor->updateCursorY(y*(_localGrid->getCellWidth()));
             }
             
 

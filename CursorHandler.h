@@ -99,14 +99,9 @@ namespace sxEditCore{
             bool moveCursorByY(int y){
                 //Making sure window sizes collected in variables are up to date.
                 updateWindowSizes();
-                int effectiveNewY =  this->y + (y*height);
                 //Checking if cursor will not go out of the window filed.
-                if( effectiveNewY >= 0 && effectiveNewY <= _windowmaxY){
-                    //std::cout<<"\n-------------Effective new Y: " << effectiveNewY<<"\n";
-                    this->y = effectiveNewY; 
-                    return true;
-                }
-                return false;
+                this->y += y;
+                return true;
             }
             int getXPosition(){
                 return x;
