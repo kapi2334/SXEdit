@@ -9,13 +9,13 @@ namespace sxEditCore{
         private:
             int x = 0;
             int y = 0;
-            int type = 0;
+            int type = 1;
             /* 0 = |
              * 1 = _
              * */
             HWND  _windowHandle;
             RECT _windowRect; //Client field react
-                               //
+            
             void writeOutDebug(){
                 std::cout<<"Cursor data:\n"
                     << "X:" << x << 
@@ -35,6 +35,7 @@ namespace sxEditCore{
         public:
             int width = 2;
             int height = 18;
+            int heaviness = 2; //How thick is _ cursor 
             int offsetX = 10;
             int offsetY = 10;
             int _windowmaxX = 0;
@@ -49,6 +50,10 @@ namespace sxEditCore{
                 }
                 std::cout<<"Creating cursor...\n";
             }
+            void setCursorSize(int newHeight){
+                this->height = newHeight;
+            }
+
 
 
             //Sets new X param 
@@ -81,7 +86,7 @@ namespace sxEditCore{
             bool moveCursorByX(int x){
                 //Making sure window sizes collected in variables are up to date.
                 updateWindowSizes();
-                int effectiveNewX =  this->x + (x*width);
+                int effectiveNewX = this->x + x;  //this->x + (x*width);
                 //Checking if cursor will not go out of the window filed.
                 if( effectiveNewX >= 0 && effectiveNewX <= _windowmaxX){
                     this->x = effectiveNewX; 
@@ -121,7 +126,7 @@ namespace sxEditCore{
                     break;
                     }
                     case 1:{
-                    Rectangle(deviceHandle,x+offsetX,y+offsetY+(height-(width+x+offsetX)),(height+y+offsetY),(width+x+offsetX));
+                    Rectangle(deviceHandle,x+offsetX,y+offsetY+height,(x+offsetX)+height,(y+offsetY+height)+heaviness);
                     break;
                     }
                 }

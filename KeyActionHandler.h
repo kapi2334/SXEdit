@@ -3,11 +3,12 @@
 #include <Windows.h>
 #include "CursorHandler.h"
 #include "Data structures/DoublyLinkedList.h"
+#include "WindowUpdateHandler.h"
 
 namespace sxEditCore{
     class KeyActionHandler{
         private:
-            CursorHandler* cursorHandler = nullptr;
+            UpdateHandler* _windowUpdateHandler = nullptr;
 
             WCHAR getCharFromWparam(WPARAM key){
                 WCHAR tmp[2];
@@ -27,32 +28,34 @@ namespace sxEditCore{
                 try{
                 switch(key){
                     //case 0x09: //TAB
-                    //case 0x0D: //ENTER
+                    case 0x0D: //ENTER
+                        _windowUpdateHandler ->moveCursorByY(1);           
+                        list.pushBack('\n'); 
                     //Arrows
                     case 0x25: //LEFT
-                        if(cursorHandler != nullptr){
-                            cursorHandler->moveCursorByX(-1); //one to the left
+                        if(_windowUpdateHandler!= nullptr){
+                            _windowUpdateHandler->moveCursorByX(-1); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
                         break;
                     case 0x26: //UP
-                        if(cursorHandler != nullptr){
-                        cursorHandler->moveCursorByY(-1); //one to the left
+                        if(_windowUpdateHandler != nullptr){
+                        _windowUpdateHandler->moveCursorByY(-1); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
                         break;
                     case 0x27: //RIGHT
-                        if(cursorHandler != nullptr){
-                        cursorHandler->moveCursorByX(1); //one to the left
+                        if(_windowUpdateHandler != nullptr){
+                        _windowUpdateHandler->moveCursorByX(1); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
                         break;
                     case 0x28: //DOWN
-                        if(cursorHandler != nullptr){
-                        cursorHandler->moveCursorByY(1); //one to the left
+                        if(_windowUpdateHandler != nullptr){
+                        _windowUpdateHandler->moveCursorByY(1); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
@@ -62,17 +65,17 @@ namespace sxEditCore{
                 if(key >= 0x30 && key <= 0x5A){
                     WCHAR tmp = getCharFromWparam(key);
                     list.pushBack(tmp);  
+                    _windowUpdateHandler->moveCursorByX(1);
                 }
                 }catch(const SXException& e){
                     MessageBoxA(hwnd,e.what(),"Error occured", MB_ICONERROR|MB_OK);
                 }
             }
         KeyActionHandler(){
-            cursorHandler = nullptr;
+            _windowUpdateHandler = nullptr;
         }
-        KeyActionHandler(CursorHandler* cursorHandler){
-           std::cout<<"Created keyAction handler.";
-           this->cursorHandler = cursorHandler; 
+        KeyActionHandler(UpdateHandler* _windowUpdateHandler){
+           this->_windowUpdateHandler = _windowUpdateHandler; 
         }    
     };
 
