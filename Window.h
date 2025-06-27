@@ -146,7 +146,8 @@ namespace sxEditCore{
                         nullptr, nullptr,
                         _windowInstance, this);
                 //Passing windowHandle to newly created objects
-                _windowUpdateHandler = new UpdateHandler(_windowHandle);
+                if(_mainTextFont == nullptr) throw new SXException("Unable to obtain valid fontHandler in window creation process");
+                _windowUpdateHandler = new UpdateHandler(_windowHandle, _mainTextFont);
                 _keyHandler = KeyActionHandler(_windowUpdateHandler);
                 //if _windowHandle is nullptr return false
                 return _windowHandle != nullptr; 

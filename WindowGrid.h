@@ -24,7 +24,7 @@ namespace sxEditCore{
             }
         public:
 
-            SxGrid(HWND hwnd, CursorHandler*& cursor){
+            SxGrid(HWND hwnd, CursorHandler*& cursor, FontHandler*& font){
                 _windowHandle = hwnd;
                 if(!GetClientRect(_windowHandle, &_windowRect)){
                     throw new SXException("Failed to get client field...", _windowHandle); 
@@ -33,9 +33,14 @@ namespace sxEditCore{
                 if (this->cursor == nullptr){
                     throw new SXException("Failed to pass cursor pointer to windowGrid service...", _windowHandle);
                 }
+                if(font == nullptr){
+                    throw new SXException("Failed to pass vaild font handler to windowGrid service", _windowHandle);
+                }
+                this->_cachedFont = font;
             }
             //Returns position of a next cell, when wrap is true - shifts next postion to new line.
             SxPosition calculateNextPosition(SxPosition currentPostion, FontHandler*& font, bool wrap = false){
+                updateFont(font);
                 updateWindowSizes();
                 int outX = currentPostion.x;
                 int outY = currentPostion.y;
@@ -54,6 +59,7 @@ namespace sxEditCore{
             }
             //Returns index of char in list, based on position on screen
             int calculateIndex(SxPosition position, FontHandler*& font){
+                updateFont(font);
                 //Save font in cache
                 _cachedFont = font; 
                 //Get new window size
@@ -70,6 +76,11 @@ namespace sxEditCore{
                 return (position.x/cellDefinition) + prevLinesIndexes;
 
             }
+
+            //Returns index of char in list, based on position on screen. Uses cashed font.
+            int calculateCachedIndex(SxPosition position){
+                return calculateIndex(position, _cachedFont);
+            }
             void updateFont(FontHandler*& font){
                 _cachedFont = font;
             }
@@ -78,7 +89,12 @@ namespace sxEditCore{
                 _charsInLine.clear(); 
             }
             int getCellWidth(){
-                return _cachedFont->getSize() + _cachedFont->_spaceBetweenChars;
+                if(_cachedFont == nullptr) {
+                    throw new SXException("Unable to get valid font handler", _windowHandle);
+                }
+                else{
+                    return _cachedFont->getSize() + _cachedFont->_spaceBetweenChars;
+                }
             }
 
     };

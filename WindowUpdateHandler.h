@@ -29,7 +29,6 @@ namespace sxEditCore{
                 SetBkMode(deviceHandle, TRANSPARENT); //Transparent text background
 
                 //Writing out text
-                std::cout << "Text: ";
                 SxPosition pos = SxPosition(_cursor->offsetX,_cursor->offsetY);
                 _localGrid->resetCharsInLineInformation();
                 for(int i = 0; i < inputList.getSize(); i++){
@@ -65,11 +64,11 @@ namespace sxEditCore{
                     "\n End of stream.\n\n";
             }
         public:
-            UpdateHandler(HWND& windowHandle){
+            UpdateHandler(HWND& windowHandle, FontHandler*& font){
                 _windowHandle = windowHandle;
                 _cursor = new CursorHandler(windowHandle); 
                 if(_cursor != nullptr){
-                    _localGrid = new SxGrid(windowHandle, _cursor);
+                    _localGrid = new SxGrid(windowHandle, _cursor, font);
                 }else{
                     throw new SXException("Error occured during cursor creation.", _windowHandle);
                 }
@@ -79,6 +78,7 @@ namespace sxEditCore{
                 delete _cursor;
             }
             void moveCursorByX(int x){
+                std::cout << x * (_localGrid -> getCellWidth());
                 _cursor->moveCursorByX(x * (_localGrid->getCellWidth()));
             }
             void moveCursorByY(int y){
@@ -90,6 +90,13 @@ namespace sxEditCore{
             void setCursorY(int y){
                 _cursor->updateCursorY(y*(_localGrid->getCellWidth()));
             }
+            //Returns the index of the letter the cursor is currently on.
+            int getIndexOfActiveLetter(){
+                    SxPosition currentCursorPos = SxPosition(_cursor->getXPosition(), _cursor->getYPosition());
+                    int index = _localGrid->calculateCachedIndex(currentCursorPos);
+                    return index;
+                return 1;
+            }
             
 
             void Update(dataStructures::dlList& textInputList, PAINTSTRUCT& ps,FontHandler*& font){
@@ -99,9 +106,6 @@ namespace sxEditCore{
                     drawCursor(deviceHandle,font);
                     EndPaint(_windowHandle,&ps);
                     redraw(_windowHandle);
-                    SxPosition debug = SxPosition(_cursor->getXPosition(), _cursor->getYPosition());
-                    int dindex = _localGrid->calculateIndex(debug, font);
-                    std::cout << "\nCursor is on: " << textInputList.get(dindex);
                     //writeOutDebug(textInputList);
                 }else{
                     throw new SXException("Fatal Error from windowUpdateHandler: Unable to get valid windowHandle");

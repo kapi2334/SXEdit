@@ -72,6 +72,7 @@ namespace sxEditCore::dataStructures{
              */
             dlNode* getNode(int index){
                 //Index validity checks.
+                if(size == 0 || (First == nullptr && Last == nullptr)) return nullptr;
                 if(index < 0 ) return nullptr;
                 if(index >= size) return nullptr;
                 //Cases when index is first or last
@@ -119,6 +120,7 @@ namespace sxEditCore::dataStructures{
                 First = nullptr;
                 Last = nullptr;
             }
+            
             //Adds value (input) to the front of the List
             int pushFront(char input){
                 dlNode *newNode = new dlNode;
@@ -164,11 +166,41 @@ namespace sxEditCore::dataStructures{
             }
             char deleteNode(int index){
                 //Obtaining node to delete
+                std::cout<<"Size: " << size << std::endl;
                 dlNode* node = getNode(index);
-                //Prev node -> next = next node, next node -> prev = prev node
-                node->prev->next = node-> next;
-                node->next->prev = node->prev;
+                if(node == nullptr) return errorChar;
                 char delval = node->value;
+                if(size == 1){
+                    delete node;
+                    First = nullptr;
+                    Last = nullptr;
+                    //Clearing cache
+                    cachedNode.nodeAddress = nullptr; 
+                    cachedNode.index = -1;
+                    size = 0;
+                } 
+                size--;
+                std::cout <<" Value: " << delval << "\n";
+                //Prev node -> next = next node, next node -> prev = prev node
+                if(node -> prev == nullptr){ //First in list
+                    First = node->next;
+                    node->next->prev = nullptr;
+                    //Updating cache
+                    cachedNode.nodeAddress = node->next;
+                    cachedNode.index = 0;
+                }else if(node -> next == nullptr){ //Last in list
+                    node->prev->next = nullptr;
+                    Last = node->prev;
+                    //Updating cache
+                    cachedNode.nodeAddress = node->prev;
+                    cachedNode.index = size-1;
+                }else{ //In the middle of a list
+                    node->prev->next = node-> next;
+                    node->next->prev = node->prev;
+                    //Updating cache
+                    cachedNode.nodeAddress = node->prev;
+                    cachedNode.index = index - 1;
+                }
                 delete node;
                 return delval;
             }
@@ -177,6 +209,28 @@ namespace sxEditCore::dataStructures{
                 dlNode* out = getNode(index);
                 if(out == nullptr) return errorChar;
                 return out->value;
+            }
+            //Clears whole contents of this list 
+            void clear(){
+                if(size != 0 && Last != nullptr){
+                    //Deleting objects 
+                    while(Last != nullptr){
+                    std::cout<<"Writing last to node\n";
+                    dlNode* node = Last;
+                    std::cout<<"Writing prev node to last node\n";
+                        Last = node->prev;
+                    std::cout<<"deleting node\n";
+                        delete node;
+                        node = nullptr;
+                        std::cout << (Last==nullptr)?"true":"false";
+                    }
+                    size = 0;
+                    Last = nullptr;
+                    First = nullptr;
+                    //Clearing cache
+                    cachedNode.nodeAddress = nullptr;
+                    cachedNode.index = - 1;
+                }
             }
             int getSize(){
                 return size;
