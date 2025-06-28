@@ -178,6 +178,7 @@ namespace sxEditCore::dataStructures{
                     cachedNode.nodeAddress = nullptr; 
                     cachedNode.index = -1;
                     size = 0;
+                    return delval;
                 } 
                 size--;
                 std::cout <<" Value: " << delval << "\n";

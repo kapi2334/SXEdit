@@ -29,8 +29,10 @@ namespace sxEditCore{
                 switch(key){
                     //case 0x09: //TAB
                     case 0x2E: //DELETE
-                        std::cout << "\nDeleting node with id: "<< _windowUpdateHandler->getIndexOfActiveLetter()<<std::endl;
                         list.deleteNode(_windowUpdateHandler->getIndexOfActiveLetter());
+                        break;
+                    case 0x08: //Backspace
+                        list.deleteNode(_windowUpdateHandler->getIndexOfActiveLetter()-1);
                         _windowUpdateHandler->moveCursorByX(-1);
                         break;
                     case 0x0D: //ENTER

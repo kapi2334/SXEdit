@@ -11,7 +11,7 @@ namespace sxEditCore{
             int _windowmaxX = 0;
             RECT _windowRect;
             HWND _windowHandle;
-            CursorHandler* cursor = nullptr;
+            CursorHandler* _cursor = nullptr;
             FontHandler* _cachedFont = nullptr;
             //Saves index of last char in line
             std::vector<int> _charsInLine = std::vector<int>();
@@ -20,18 +20,18 @@ namespace sxEditCore{
                     throw new SXException("Failed to get client field...", _windowHandle); 
                 }
                 //Calculating effective window size
-                _windowmaxX = _windowRect.right - (_windowRect.left + 2*cursor->offsetX);
+                _windowmaxX = _windowRect.right - (_windowRect.left + 2*_cursor->offsetX);
             }
         public:
 
-            SxGrid(HWND hwnd, CursorHandler*& cursor, FontHandler*& font){
+            SxGrid(HWND hwnd, CursorHandler*& _cursor, FontHandler*& font){
                 _windowHandle = hwnd;
                 if(!GetClientRect(_windowHandle, &_windowRect)){
                     throw new SXException("Failed to get client field...", _windowHandle); 
                 }
-                this->cursor = cursor;
-                if (this->cursor == nullptr){
-                    throw new SXException("Failed to pass cursor pointer to windowGrid service...", _windowHandle);
+                this->_cursor = _cursor;
+                if (this->_cursor == nullptr){
+                    throw new SXException("Failed to pass _cursor pointer to windowGrid service...", _windowHandle);
                 }
                 if(font == nullptr){
                     throw new SXException("Failed to pass vaild font handler to windowGrid service", _windowHandle);
@@ -48,7 +48,7 @@ namespace sxEditCore{
 
                 outX += gridCell;       
                 if(outX >= _windowmaxX || wrap == true){
-                    outX = cursor->offsetX;
+                    outX = _cursor->offsetX;
                     outY += gridCell; 
                     _charsInLine.push_back(calculateIndex(currentPostion,font)+1);
                 }
@@ -76,6 +76,28 @@ namespace sxEditCore{
                 return (position.x/cellDefinition) + prevLinesIndexes;
 
             }
+            //Returns position of char on screen by given index 
+            SxPosition calculateCurrentPosition(int index){
+                updateFont(_cachedFont);
+                updateWindowSizes();
+                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
+                int tmp = 0;
+                
+                for(int i = 0; i < _charsInLine.size(); i++){
+                    if(index > _charsInLine[i]){
+                        tmp = i;
+                    }
+                }
+                SxPosition out = SxPosition(((index - tmp)*gridCell) + _cursor->offsetX, (tmp * gridCell) + _cursor->offsetY);
+                return out;
+
+            }
+            //Returns position of the character in the line (f.e in 'abc' 'b' is 2nd character)
+            int calculateLinePosition(SxPosition position){
+                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
+                return (position.x/gridCell);
+            }
+            
 
             //Returns index of char in list, based on position on screen. Uses cashed font.
             int calculateCachedIndex(SxPosition position){

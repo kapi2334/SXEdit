@@ -97,6 +97,10 @@ namespace sxEditCore{
                     return index;
                 return 1;
             }
+            int getLinePositionOfIndexedLetter(int index){
+                SxPosition positionOfIndex = _localGrid->calculateCurrentPosition(index);
+                return _localGrid->calculateLinePosition(positionOfIndex);
+            }
             
 
             void Update(dataStructures::dlList& textInputList, PAINTSTRUCT& ps,FontHandler*& font){
