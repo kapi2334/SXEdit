@@ -55,6 +55,7 @@ namespace sxEditCore{
                         }else{
 
                         }
+                        break;
                     case 0x2E: //DELETE
                         list.deleteNode(_windowUpdateHandler->getIndexOfActiveLetter());
                         break;

@@ -14,6 +14,7 @@ namespace sxEditCore{
             HWND _windowHandle;
             SxGrid* _localGrid = nullptr; //Text grid
             CursorHandler* _cursor = nullptr;
+            int _spaceBetweenCursorAndLetter = 2;
             void drawCursor(HDC& hdc){
                 _cursor->setCursorHeight(fontHandler->getSize());
                 _cursor->drawCursor(hdc); 
@@ -91,10 +92,16 @@ namespace sxEditCore{
                 int line = _cursor->getYPosition()/_localGrid->getCellWidth();
                 if (list == nullptr) throw new SXException("Unable to get valid pointer to the memory list to check if cursor movement is valid.", _windowHandle);
                 //New cursor position is outside the number of chars in single line.
-               // std::cout << "New cursor position in line " << line << " is: " << positionInLine << ". Number of chars in this line is: " 
-               //     << _localGrid->getNumberOfCharsInGivenLine(line,list) << " E\n";
                 if(positionInLine > _localGrid->getNumberOfCharsInGivenLine(line, list)){
+                        if(_localGrid->getNumberOfCharsInGivenLine(line+1,list) > 0){
+                            setCursorX(0);
+                            setCursorY(line+1);
+                        }
                     return;
+                }else if(newCursorPosition.x < 0 && _localGrid->getNumberOfCharsInGivenLine(line-1,list) > 0){
+                    //Move cursor up when upper line has chars and user is hitting left arrow in a wall
+                    setCursorX(_localGrid->getNumberOfCharsInGivenLine(line-1,list));
+                    setCursorY(line-1);
                 }
                 _cursor -> moveCursorByX(shift);
             }

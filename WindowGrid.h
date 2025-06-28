@@ -41,7 +41,7 @@ namespace sxEditCore{
                 updateWindowMaxSizes();
                 int outX = currentPostion.x;
                 int outY = currentPostion.y;
-                int gridCell = (font->getSize()+font->_spaceBetweenChars);
+                int gridCell = getCellWidthFromFont(font); 
 
                 outX += gridCell;       
                 if(outX >= _windowmaxX || wrap == true){
@@ -49,6 +49,9 @@ namespace sxEditCore{
                     outY += gridCell; 
                     _charsInLine.push_back(calculateIndex(currentPostion,font)+1);
                 }
+                //Centering in the grid's cell
+                outX += 1;
+
                 currentPostion.x = outX;
                 currentPostion.y = outY;
                 return currentPostion;
@@ -62,7 +65,7 @@ namespace sxEditCore{
                 //Get new window size
                 updateWindowMaxSizes();
                 //Calculate single cell width
-                int cellDefinition = (font->getSize()+ font->_spaceBetweenChars);
+                int cellDefinition = getCellWidthFromFont(font);
                 int prevLinesIndexes = 0;
                 if(!_charsInLine.empty()){
                     //Gets index of single char and add previous indexes from previous lines
@@ -74,7 +77,7 @@ namespace sxEditCore{
             }
             //Returns position of the character in the line (f.e in 'abc' 'b' is 2nd character)
             int calculateLinePosition(SxPosition position){
-                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
+                int gridCell = getCellWidthFromFont(_cachedFont); 
                 return (position.x/gridCell);
             }
             //Returns index of char in list, based on position on screen. 
@@ -86,7 +89,7 @@ namespace sxEditCore{
             SxPosition calculateCurrentPosition(int index){
                 updateFont(_cachedFont);
                 updateWindowMaxSizes();
-                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
+                int gridCell = getCellWidthFromFont(_cachedFont);
                 int tmp = 0;
 
                 for(int i = 0; i < _charsInLine.size(); i++){
@@ -123,8 +126,12 @@ namespace sxEditCore{
                     throw new SXException("Unable to get valid font handler", _windowHandle);
                 }
                 else{
-                    return _cachedFont->getSize() + _cachedFont->_spaceBetweenChars;
+                    return getCellWidthFromFont(_cachedFont); 
                 }
+            }
+            int getCellWidthFromFont(FontHandler*& font){
+                if(font == nullptr) throw new SXException("Unable to get valid font handler", _windowHandle);
+                return font->getSize() + _cachedFont->_spaceBetweenChars + _cursor->width;
             }
             //Returns number of letters in given line
             int getNumberOfCharsInGivenLine(int line, dataStructures::dlList* list){
