@@ -14,10 +14,8 @@ namespace sxEditCore{
                 WCHAR tmp[2];
                 tmp[0] = (WCHAR)key;
                 tmp[1] = L'\0';
-                //Checking if SHIFT or CAPS are pressed
-                bool shift = (GetKeyState(VK_SHIFT)&0x8000) != 0; //Checking if 15th bit = 1 - it means that shift is pressed.
-                bool caps = (GetKeyState(VK_CAPITAL)&0x0001) !=0; //Checking if first bit = 1 - it means that shift is pressed.
-                if(!(shift ^ caps)){ //!XOR 
+
+                if(!(_shouldBeCapital())){ 
                     tmp[0] = towlower(tmp[0]);
                 }
                     
@@ -31,6 +29,17 @@ namespace sxEditCore{
                 if(key >= 0x6A && key <= 0x6F) return true; // numpad '+','-','*','/' keys
                 return false;
             }
+            //Returns true if in current moment SHIFT key is pressed or CAPS is active.
+            bool _shouldBeCapital(){
+                //Checking if SHIFT or CAPS are pressed
+                bool shift = (GetKeyState(VK_SHIFT)&0x8000) != 0; //Checking if 15th bit = 1 - it means that shift is pressed.
+                bool caps = (GetKeyState(VK_CAPITAL)&0x0001) !=0; //Checking if first bit = 1 - it means that shift is pressed.
+                return (shift ^ caps); //XOR
+            }
+            //Returns true if in current moment ctrl key is pressed.
+            bool _isCtrlPressed(){
+                return (GetKeyState(VK_CONTROL) & 0x8000);
+            }
         public:
             //By this amount the font size is changed when you click 'ctrl' + '+/-'
             int fontResizingFactor = 2;
@@ -38,6 +47,14 @@ namespace sxEditCore{
                 try{
                 switch(key){
                     //case 0x09: //TAB
+                    case 0x2D: //INSERT
+                        //With ctrl - allows you to switch between different cursor styles.
+                        //Without - changes cursor input style - normal/overwrite
+                        if(_isCtrlPressed()){
+                            _windowUpdateHandler->switchCursorToNextStyle();                            
+                        }else{
+
+                        }
                     case 0x2E: //DELETE
                         list.deleteNode(_windowUpdateHandler->getIndexOfActiveLetter());
                         break;
@@ -82,7 +99,7 @@ namespace sxEditCore{
                         break;
                     case 0x6B: // + on numpad    
                     case 0xBB: // +
-                        if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
+                        if(_isCtrlPressed()){ //Is ctrl key pressed
                                                               //Make font bigger by fontResizingFactor 
                             //Save on which letter in current line cursor is on. 
                             int currentActiveLetterIndex =_windowUpdateHandler->getLinePositionOfIndexedLetter(
@@ -97,7 +114,7 @@ namespace sxEditCore{
                         break;
                     case 0x6D: // - on numpad    
                     case 0xBD: // -
-                        if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
+                        if(_isCtrlPressed()){ //Is ctrl key pressed
                                                               //Make font smaller by fontResizingFactor 
                             //Save on which letter in current line cursor is on. 
                             int currentActiveLetterIndex =_windowUpdateHandler->getLinePositionOfIndexedLetter(

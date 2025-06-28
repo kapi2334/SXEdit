@@ -9,23 +9,33 @@ namespace sxEditCore{
         private:
             int x = 0;
             int y = 0;
-            int type = 0;
+            //Defines active cursor style
+            int _type = 0;
             /* 0 = |
              * 1 = _
              * */
+            //Defines how many cursor styles are implemented;
+            int _numberOfTypes = 2; 
+
             HWND  _windowHandle;
             RECT _windowRect; //Client field react
             
-            void writeOutDebug(){
-                std::cout<<"Cursor data:\n"
-                    << "X:" << x << 
+            void writeOutDebug(std::string calledAt = "Not specified."){
+                std::cout << "\n\n--------------------------------\n"; //Separator
+                std::cout<<"Cursor data:"<<
+                    "\nX:" << x << 
                     "\nY:" << y << 
                     "\nWidth:" << width << 
                     "\nHeight:" << height << 
                     "\nRealX: "<< x + offsetX << 
                     "\nRealY:" << y + offsetY << 
                     "\nWindowWidth" << _windowmaxX <<
-                    "\nWindowHeight" << _windowmaxY;
+                    "\nWindowHeight" << _windowmaxY <<
+                    "\nCursorType: " << _type <<
+                    "\nNumberOfTypes: " << _numberOfTypes <<
+                    "\nDEBUG MESSAGE CALLED IN: " << "CursorHandler.h " << ", at: " << calledAt <<
+                    "\nEnd of stream.";
+                std::cout << "\n--------------------------------\n"; //Separator
             }
             void updateWindowSizes(){
                 if(!GetClientRect(_windowHandle, &_windowRect)){
@@ -116,12 +126,24 @@ namespace sxEditCore{
             int getYPosition(){
                 return y;
             }
+            //Sets cursor style to passed type. If no type passed - next valid cursor type will be applied.
+            void switchCursorStyle(int style = -1){
+                if(style != -1){
+                    this->_type = style;
+                }else{
+                   if((this->_type + 1) > _numberOfTypes-1){
+                        this->_type = 0; 
+                   }else{
+                        this->_type ++;
+                   } 
+                }
+            }
 
             void drawCursor(HDC& deviceHandle){
                 //writeOutDebug();
                 HPEN cursorPen = CreatePen(PS_SOLID, 1,RGB(255,255,255));
                 HPEN oldPen = (HPEN) SelectObject(deviceHandle, cursorPen);
-                switch(type){
+                switch(_type){
                     case 0:{
                     Rectangle(deviceHandle,x+offsetX,y+offsetY,(width+x+offsetX),(height+y+offsetY));
                     break;
@@ -133,6 +155,7 @@ namespace sxEditCore{
                 }
                 SelectObject(deviceHandle, oldPen);
                 DeleteObject(cursorPen);
+                //writeOutDebug("End of the drawCursor function.");
             }
     };
 

@@ -74,7 +74,6 @@ namespace sxEditCore{
                     //Gets index of single char and add previous indexes from previous lines
                     prevLinesIndexes = _charsInLine[(position.y/cellDefinition)-1];
                     if(position.y == 0 ) prevLinesIndexes = 0;
-                    std::cout << prevLinesIndexes;
                 }
                 return (position.x/cellDefinition) + prevLinesIndexes;
 

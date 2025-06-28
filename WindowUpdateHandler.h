@@ -74,7 +74,7 @@ namespace sxEditCore{
                 if(_cursor != nullptr){
                     _localGrid = new SxGrid(windowHandle, _cursor, fontHandler);
                 }else{
-                    throw new SXException("Error occured during cursor creation.", _windowHandle);
+            throw new SXException("Error occured during cursor creation.", _windowHandle);
                 }
             }
             //Destructor
@@ -99,6 +99,14 @@ namespace sxEditCore{
             //Sets cursor on given position on Y axis. The position is relative to the grid.
             void setCursorY(int y){
                 _cursor->updateCursorY(y*(_localGrid->getCellWidth()));
+            }
+            //Applies next available style to the cursor.
+            void switchCursorToNextStyle(){
+                _cursor->switchCursorStyle();
+            }
+            //Applies specified style to the cursor.
+            void switchCursorStyle(int style){
+                _cursor->switchCursorStyle(style);
             }
             //Returns the index of the letter the cursor is currently on.
             int getIndexOfActiveLetter(){

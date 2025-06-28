@@ -82,7 +82,6 @@ namespace sxEditCore::dataStructures{
                 dlNode* outNode = tryToCache(index);
                 if(outNode != nullptr){
                 //Success
-                    //std::cout << "Node from cashe returned: " << outNode->value<<"\n";
                     return outNode;
                 }
                 else{
@@ -93,7 +92,6 @@ namespace sxEditCore::dataStructures{
                         for(int i = 0; i < index; i++){
                             outNode = outNode->next;
                         }
-                      //  std::cout << "Node from front side returned: " << outNode->value<<"\n";
                         return outNode;
                         
                     
@@ -104,7 +102,6 @@ namespace sxEditCore::dataStructures{
                         for(int i = size - 1; i > index; i--){
                             outNode = outNode->prev;
                         }
-                        //std::cout << "Node from back side returned: " << outNode->value<<"\n";
                         return outNode;
                     }
                 }
@@ -166,7 +163,6 @@ namespace sxEditCore::dataStructures{
             }
             char deleteNode(int index){
                 //Obtaining node to delete
-                std::cout<<"Size: " << size << std::endl;
                 dlNode* node = getNode(index);
                 if(node == nullptr) return errorChar;
                 char delval = node->value;
@@ -181,7 +177,6 @@ namespace sxEditCore::dataStructures{
                     return delval;
                 } 
                 size--;
-                std::cout <<" Value: " << delval << "\n";
                 //Prev node -> next = next node, next node -> prev = prev node
                 if(node -> prev == nullptr){ //First in list
                     First = node->next;
@@ -216,14 +211,10 @@ namespace sxEditCore::dataStructures{
                 if(size != 0 && Last != nullptr){
                     //Deleting objects 
                     while(Last != nullptr){
-                    std::cout<<"Writing last to node\n";
                     dlNode* node = Last;
-                    std::cout<<"Writing prev node to last node\n";
                         Last = node->prev;
-                    std::cout<<"deleting node\n";
                         delete node;
                         node = nullptr;
-                        std::cout << (Last==nullptr)?"true":"false";
                     }
                     size = 0;
                     Last = nullptr;
