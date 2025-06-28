@@ -9,21 +9,15 @@ namespace sxEditCore{
     class SxGrid {
         private:
             int _windowmaxX = 0;
+            int _windowmaxY = 0;
             RECT _windowRect;
             HWND _windowHandle;
             CursorHandler* _cursor = nullptr;
             FontHandler* _cachedFont = nullptr;
             //Saves index of last char in line
             std::vector<int> _charsInLine = std::vector<int>();
-            void updateWindowSizes(){
-                if(!GetClientRect(_windowHandle, &_windowRect)){
-                    throw new SXException("Failed to get client field...", _windowHandle); 
-                }
-                //Calculating effective window size
-                _windowmaxX = _windowRect.right - (_windowRect.left + 2*_cursor->offsetX);
-            }
         public:
-
+            //Default constructor, class needs window handle, cursor handle and font handle to operate properly. 
             SxGrid(HWND hwnd, CursorHandler*& _cursor, FontHandler*& font){
                 _windowHandle = hwnd;
                 if(!GetClientRect(_windowHandle, &_windowRect)){
@@ -38,10 +32,19 @@ namespace sxEditCore{
                 }
                 this->_cachedFont = font;
             }
+            //Updates current window max sizes. Recommended to call after any window size change.
+            void updateWindowMaxSizes(){
+                if(!GetClientRect(_windowHandle, &_windowRect)){
+                    throw new SXException("Failed to get client field...", _windowHandle); 
+                }
+                //Calculating effective window size
+                _windowmaxX = _windowRect.right - (_windowRect.left + 2*_cursor->offsetX);
+                _windowmaxY = _windowRect.bottom - (_windowRect.top + 2*_cursor->offsetY);
+            }
             //Returns position of a next cell, when wrap is true - shifts next postion to new line.
             SxPosition calculateNextPosition(SxPosition currentPostion, FontHandler*& font, bool wrap = false){
                 updateFont(font);
-                updateWindowSizes();
+                updateWindowMaxSizes();
                 int outX = currentPostion.x;
                 int outY = currentPostion.y;
                 int gridCell = (font->getSize()+font->_spaceBetweenChars);
@@ -63,7 +66,7 @@ namespace sxEditCore{
                 //Save font in cache
                 _cachedFont = font; 
                 //Get new window size
-                updateWindowSizes();
+                updateWindowMaxSizes();
                 //Calculate single cell width
                 int cellDefinition = (font->getSize()+ font->_spaceBetweenChars);
                 int prevLinesIndexes = 0;
@@ -79,7 +82,7 @@ namespace sxEditCore{
             //Returns position of char on screen by given index 
             SxPosition calculateCurrentPosition(int index){
                 updateFont(_cachedFont);
-                updateWindowSizes();
+                updateWindowMaxSizes();
                 int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
                 int tmp = 0;
                 
@@ -99,17 +102,19 @@ namespace sxEditCore{
             }
             
 
-            //Returns index of char in list, based on position on screen. Uses cashed font.
+            //Returns index of char in list, based on position on screen. 
             int calculateCachedIndex(SxPosition position){
                 return calculateIndex(position, _cachedFont);
             }
+            //Saves new fontHandler to class cache to later use.
             void updateFont(FontHandler*& font){
                 _cachedFont = font;
             }
-            //Resets information about number of characters in one line.
+            //_charsInLine is a vector, which saves index of last letter in each line. This function clears this vector, which leads to deletion of this data.
             void resetCharsInLineInformation(){
                 _charsInLine.clear(); 
             }
+            //Returns width of single cell. Cell represents space taken by one character in grid, so this class member returns one letter width.
             int getCellWidth(){
                 if(_cachedFont == nullptr) {
                     throw new SXException("Unable to get valid font handler", _windowHandle);

@@ -33,6 +33,7 @@ namespace sxEditCore {
         }
 
     public:
+        int maxFontSize = 120; //Sets the maximum settable font size;
         int _spaceBetweenChars = 15; //Put it as font variable
         FontHandler(LPCSTR fontName, int size, COLORREF textColor = RGB(255,255,255),
                     int weight = FW_NORMAL, bool italic = false, bool underline = false,
@@ -67,8 +68,10 @@ namespace sxEditCore {
 
         //Sets up new font size
         void updateFontSize(int size){
-            logFont.lfHeight = size;
-            logFont.lfWidth = size;
+            if(size >= 1 && size <= maxFontSize){
+                logFont.lfHeight = size;
+                logFont.lfWidth = size;
+            }
 
             recreateFont();
         }

@@ -14,11 +14,11 @@ namespace sxEditCore{
             HWND _windowHandle;
             SxGrid* _localGrid = nullptr; //Text grid
             CursorHandler* _cursor = nullptr;
-            void drawCursor(HDC& hdc,FontHandler*& fontHandler){
-                _cursor->setCursorSize(fontHandler->getSize());
+            void drawCursor(HDC& hdc){
+                _cursor->setCursorHeight(fontHandler->getSize());
                 _cursor->drawCursor(hdc); 
             }
-            void drawLetters(dataStructures::dlList& inputList,HDC& deviceHandle,FontHandler*& fontHandler){
+            void drawLetters(dataStructures::dlList& inputList,HDC& deviceHandle){
                 HFONT font = fontHandler->getFont();
                 //Conversion to null-terminated string
                 char tmp[2] = { 0 };
@@ -44,9 +44,7 @@ namespace sxEditCore{
                     
                     TextOutA(deviceHandle,pos.x,pos.y,tmp,1);
                     pos = _localGrid->calculateNextPosition(pos,fontHandler, moveText);
-                    //std::cout << tmp;
                 }
-                //std::cout << "|\n";
                 //Setting back old font
                 SelectObject(deviceHandle, oldFont);
             }
@@ -64,29 +62,41 @@ namespace sxEditCore{
                     "\n End of stream.\n\n";
             }
         public:
-            UpdateHandler(HWND& windowHandle, FontHandler*& font){
+            FontHandler* fontHandler = nullptr;
+            //Default constructor.
+            UpdateHandler(HWND& windowHandle){
                 _windowHandle = windowHandle;
+                fontHandler = new FontHandler("Arial",12);
+                if(fontHandler == nullptr){
+                   throw new SXException("Error occured during font creation in WindowUpdateHandler.", _windowHandle); 
+                }
                 _cursor = new CursorHandler(windowHandle); 
                 if(_cursor != nullptr){
-                    _localGrid = new SxGrid(windowHandle, _cursor, font);
+                    _localGrid = new SxGrid(windowHandle, _cursor, fontHandler);
                 }else{
                     throw new SXException("Error occured during cursor creation.", _windowHandle);
                 }
             }
+            //Destructor
             ~UpdateHandler(){
                 delete _localGrid;
+                delete fontHandler;
                 delete _cursor;
             }
+            //Moves cursor by given X. Cursor position is relative to grid, witch means x = 1 leads to cursor movement to the right by 1 cell.
             void moveCursorByX(int x){
-                std::cout << x * (_localGrid -> getCellWidth());
-                _cursor->moveCursorByX(x * (_localGrid->getCellWidth()));
+                int position = x * (_localGrid->getCellWidth());
+                _cursor -> moveCursorByX(position);
             }
+            //Moves cursor by given Y. Cursor position is relative to grid, witch means y = 1 leads to cursor movement down by 1 cell.
             void moveCursorByY(int y){
                 _cursor->moveCursorByY(y*(_localGrid->getCellWidth()));
             }
+            //Sets cursor on given position on X axis. The position is relative to the grid.
             void setCursorX(int x){
                 _cursor->updateCursorX(x*(_localGrid->getCellWidth()));
             }
+            //Sets cursor on given position on Y axis. The position is relative to the grid.
             void setCursorY(int y){
                 _cursor->updateCursorY(y*(_localGrid->getCellWidth()));
             }
@@ -97,19 +107,22 @@ namespace sxEditCore{
                     return index;
                 return 1;
             }
+            //Returns position in current line of letter with given index.
             int getLinePositionOfIndexedLetter(int index){
                 SxPosition positionOfIndex = _localGrid->calculateCurrentPosition(index);
                 return _localGrid->calculateLinePosition(positionOfIndex);
             }
             
-
-            void Update(dataStructures::dlList& textInputList, PAINTSTRUCT& ps,FontHandler*& font){
+            //Updates all data on screen.
+            void Update(dataStructures::dlList& textInputList, PAINTSTRUCT& ps){
                 if(_windowHandle){
                     HDC deviceHandle = BeginPaint(_windowHandle,&ps);
-                    drawLetters(textInputList, deviceHandle, font);
-                    drawCursor(deviceHandle,font);
+                    drawLetters(textInputList, deviceHandle);
+                    drawCursor(deviceHandle);
                     EndPaint(_windowHandle,&ps);
                     redraw(_windowHandle);
+                    _localGrid->updateFont(fontHandler);
+                    _localGrid->updateWindowMaxSizes();
                     //writeOutDebug(textInputList);
                 }else{
                     throw new SXException("Fatal Error from windowUpdateHandler: Unable to get valid windowHandle");

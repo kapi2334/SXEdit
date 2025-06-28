@@ -32,6 +32,8 @@ namespace sxEditCore{
                 return false;
             }
         public:
+            //By this amount the font size is changed when you click 'ctrl' + '+/-'
+            int fontResizingFactor = 2;
             void registerPress(WPARAM key,dataStructures::dlList& list, HWND hwnd){
                 try{
                 switch(key){
@@ -81,13 +83,31 @@ namespace sxEditCore{
                     case 0x6B: // + on numpad    
                     case 0xBB: // +
                         if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
-                            throw SXException("Pressed ctrl and +");
+                                                              //Make font bigger by fontResizingFactor 
+                            //Save on which letter in current line cursor is on. 
+                            int currentActiveLetterIndex =_windowUpdateHandler->getLinePositionOfIndexedLetter(
+                                    _windowUpdateHandler->getIndexOfActiveLetter()
+                                    );
+                            //Update font size
+                            int currentFontSize = _windowUpdateHandler->fontHandler->getSize();
+                            _windowUpdateHandler->fontHandler->updateFontSize(currentFontSize + fontResizingFactor);
+                            //Set cursor in valid position on screen.
+                            _windowUpdateHandler->setCursorX(currentActiveLetterIndex);
                         }
                         break;
                     case 0x6D: // - on numpad    
                     case 0xBD: // -
                         if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
-                            throw SXException("Pressed ctrl and -");
+                                                              //Make font smaller by fontResizingFactor 
+                            //Save on which letter in current line cursor is on. 
+                            int currentActiveLetterIndex =_windowUpdateHandler->getLinePositionOfIndexedLetter(
+                                    _windowUpdateHandler->getIndexOfActiveLetter()
+                                    );
+                            //Update font size
+                            int currentFontSize = _windowUpdateHandler->fontHandler->getSize();
+                            _windowUpdateHandler->fontHandler->updateFontSize(currentFontSize - fontResizingFactor);
+                            //Set cursor in valid position on screen.
+                            _windowUpdateHandler->setCursorX(currentActiveLetterIndex);
                         }
                         break;
                     //Normal button clicked    

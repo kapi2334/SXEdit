@@ -9,7 +9,7 @@ namespace sxEditCore{
         private:
             int x = 0;
             int y = 0;
-            int type = 1;
+            int type = 0;
             /* 0 = |
              * 1 = _
              * */
@@ -28,6 +28,9 @@ namespace sxEditCore{
                     "\nWindowHeight" << _windowmaxY;
             }
             void updateWindowSizes(){
+                if(!GetClientRect(_windowHandle, &_windowRect)){
+                    throw new SXException("Failed to get client field...", _windowHandle); 
+                }
                 //Calculating effective window size
                 _windowmaxX = _windowRect.right - (_windowRect.left + width + 2*offsetX);
                 _windowmaxY = _windowRect.bottom - (_windowRect.top + height + offsetY);
@@ -43,14 +46,13 @@ namespace sxEditCore{
             CursorHandler(HWND& windowHandle){
                 this->_windowHandle = windowHandle;
                 if(_windowHandle == nullptr) {
-                    std::cout << "Fatal Error: Window handler passed to CurosrHandler function is invalid.";
+                    throw new SXException("Fatal Error: Window handler passed to CurosrHandler function is invalid.",_windowHandle);
                 }
                 if(!GetClientRect(_windowHandle, &_windowRect)){
                     throw new SXException("Failed to get client field...", windowHandle); 
                 }
-                std::cout<<"Creating cursor...\n";
             }
-            void setCursorSize(int newHeight){
+            void setCursorHeight(int newHeight){
                 this->height = newHeight;
             }
 
@@ -60,10 +62,10 @@ namespace sxEditCore{
             bool updateCursorX(int newX){
                 //Making sure window sizes collected in variables are up to date.
                 updateWindowSizes();
-                int effectiveNewX = newX*width;
+                int effectiveNewX = newX + offsetX;
                 //Checking if cursor will not go out of the window filed.
-                if( effectiveNewX >= 0 && effectiveNewX <= _windowmaxX-width-offsetX){
-                    x = newX*width;
+                if( effectiveNewX >= 0 && effectiveNewX <= _windowmaxX-width){
+                    x = effectiveNewX;
                     return true;
                 } 
                 return false;
@@ -100,8 +102,13 @@ namespace sxEditCore{
                 //Making sure window sizes collected in variables are up to date.
                 updateWindowSizes();
                 //Checking if cursor will not go out of the window filed.
-                this->y += y;
-                return true;
+                if((this->y + y) >= 0){
+                        this->y += y;
+                    return true;
+                }else{
+                    return false;
+                }
+
             }
             int getXPosition(){
                 return x;
@@ -111,7 +118,6 @@ namespace sxEditCore{
             }
 
             void drawCursor(HDC& deviceHandle){
-                //std::cout<<"Drawing cursor...";
                 //writeOutDebug();
                 HPEN cursorPen = CreatePen(PS_SOLID, 1,RGB(255,255,255));
                 HPEN oldPen = (HPEN) SelectObject(deviceHandle, cursorPen);

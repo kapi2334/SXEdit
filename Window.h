@@ -18,7 +18,6 @@ namespace sxEditCore{
             LPCSTR _className;
             HINSTANCE _windowInstance;
             KeyActionHandler _keyHandler;
-            FontHandler* _mainTextFont ;
             UpdateHandler* _windowUpdateHandler = nullptr;
             dataStructures::dlList _charList;
 
@@ -76,8 +75,7 @@ namespace sxEditCore{
                                           //Call window's update function
                                           _windowUpdateHandler->Update(
                                                   _charList,      //Data list
-                                                  ps,             //PAINTSRUCT
-                                                  _mainTextFont //HFONT
+                                                  ps             //PAINTSRUCT
                                                   );
 
                                       }else{
@@ -111,7 +109,6 @@ namespace sxEditCore{
                 _windowName = "Window";
                 _className = "Main Window Class";
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 12);
                 _charList = dataStructures::dlList();
 
             }
@@ -122,12 +119,10 @@ namespace sxEditCore{
                 _windowName = windowName;
                 _className = windowClassName;
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 12);
                 _charList = dataStructures::dlList();
             }
             //Deconstructor
             ~WindowsWindowLogic(){
-                delete _mainTextFont;
                 delete _windowUpdateHandler;
             }
 
@@ -146,8 +141,7 @@ namespace sxEditCore{
                         nullptr, nullptr,
                         _windowInstance, this);
                 //Passing windowHandle to newly created objects
-                if(_mainTextFont == nullptr) throw new SXException("Unable to obtain valid fontHandler in window creation process");
-                _windowUpdateHandler = new UpdateHandler(_windowHandle, _mainTextFont);
+                _windowUpdateHandler = new UpdateHandler(_windowHandle);
                 _keyHandler = KeyActionHandler(_windowUpdateHandler);
                 //if _windowHandle is nullptr return false
                 return _windowHandle != nullptr; 
