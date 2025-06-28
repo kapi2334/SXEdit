@@ -23,6 +23,14 @@ namespace sxEditCore{
                     
                 return *tmp;
             }
+            bool checkIsKeyValid(WPARAM key){
+                if(key >= 0x30 && key <= 0x5A && key != 0x40) return true; //Normal keys
+                if(key >= 0x60 && key <= 0x69){ //numpad 1-9 keys
+                    if((GetKeyState(VK_NUMLOCK) & 0x0001) != 0) return true; //Numlock is active 
+                }
+                if(key >= 0x6A && key <= 0x6F) return true; // numpad '+','-','*','/' keys
+                return false;
+            }
         public:
             void registerPress(WPARAM key,dataStructures::dlList& list, HWND hwnd){
                 try{
@@ -70,12 +78,25 @@ namespace sxEditCore{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
                         break;
-                }
-                //Normal button clicked
-                if(key >= 0x30 && key <= 0x5A){
-                    WCHAR tmp = getCharFromWparam(key);
-                    list.pushBack(tmp);  
-                    _windowUpdateHandler->moveCursorByX(1);
+                    case 0x6B: // + on numpad    
+                    case 0xBB: // +
+                        if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
+                            throw SXException("Pressed ctrl and +");
+                        }
+                        break;
+                    case 0x6D: // - on numpad    
+                    case 0xBD: // -
+                        if(GetKeyState(VK_CONTROL) & 0x8000){ //Is ctrl key pressed
+                            throw SXException("Pressed ctrl and -");
+                        }
+                        break;
+                    //Normal button clicked    
+                    default:
+                        if(checkIsKeyValid(key)){ 
+                            WCHAR tmp = getCharFromWparam(key);
+                            list.pushBack(tmp);  
+                            _windowUpdateHandler->moveCursorByX(1);
+                        }
                 }
                 }catch(const SXException& e){
                     MessageBoxA(hwnd,e.what(),"Error occured", MB_ICONERROR|MB_OK);

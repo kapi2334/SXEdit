@@ -111,7 +111,7 @@ namespace sxEditCore{
                 _windowName = "Window";
                 _className = "Main Window Class";
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 24);
+                _mainTextFont = new FontHandler("Arial", 12);
                 _charList = dataStructures::dlList();
 
             }
@@ -122,7 +122,7 @@ namespace sxEditCore{
                 _windowName = windowName;
                 _className = windowClassName;
                 _windowInstance = instace;
-                _mainTextFont = new FontHandler("Arial", 24);
+                _mainTextFont = new FontHandler("Arial", 12);
                 _charList = dataStructures::dlList();
             }
             //Deconstructor
