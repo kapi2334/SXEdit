@@ -47,6 +47,10 @@ namespace sxEditCore{
                 try{
                 switch(key){
                     //case 0x09: //TAB
+                    case 0x20: //SPACEBAR
+                       list.pushBack(' ');
+                       _windowUpdateHandler->moveCursorByX(1,&list);
+                       break;
                     case 0x2D: //INSERT
                         //With ctrl - allows you to switch between different cursor styles.
                         //Without - changes cursor input style - normal/overwrite
