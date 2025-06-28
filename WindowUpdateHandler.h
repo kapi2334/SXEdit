@@ -84,9 +84,19 @@ namespace sxEditCore{
                 delete _cursor;
             }
             //Moves cursor by given X. Cursor position is relative to grid, witch means x = 1 leads to cursor movement to the right by 1 cell.
-            void moveCursorByX(int x){
-                int position = x * (_localGrid->getCellWidth());
-                _cursor -> moveCursorByX(position);
+            void moveCursorByX(int x, dataStructures::dlList* list = nullptr){
+                int shift = x * (_localGrid->getCellWidth());
+                SxPosition newCursorPosition = SxPosition(_cursor->getXPosition()+shift,_cursor->getYPosition());
+                int positionInLine =_localGrid->calculateLinePosition(newCursorPosition);
+                int line = _cursor->getYPosition()/_localGrid->getCellWidth();
+                if (list == nullptr) throw new SXException("Unable to get valid pointer to the memory list to check if cursor movement is valid.", _windowHandle);
+                //New cursor position is outside the number of chars in single line.
+               // std::cout << "New cursor position in line " << line << " is: " << positionInLine << ". Number of chars in this line is: " 
+               //     << _localGrid->getNumberOfCharsInGivenLine(line,list) << " E\n";
+                if(positionInLine > _localGrid->getNumberOfCharsInGivenLine(line, list)){
+                    return;
+                }
+                _cursor -> moveCursorByX(shift);
             }
             //Moves cursor by given Y. Cursor position is relative to grid, witch means y = 1 leads to cursor movement down by 1 cell.
             void moveCursorByY(int y){

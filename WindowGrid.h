@@ -4,6 +4,7 @@
 #include "CursorHandler.h"
 #include "FontHandler.h"
 #include "SxPosition.h"
+#include "Data structures/DoublyLinkedList.h"
 #include <vector>
 namespace sxEditCore{
     class SxGrid {
@@ -32,15 +33,8 @@ namespace sxEditCore{
                 }
                 this->_cachedFont = font;
             }
-            //Updates current window max sizes. Recommended to call after any window size change.
-            void updateWindowMaxSizes(){
-                if(!GetClientRect(_windowHandle, &_windowRect)){
-                    throw new SXException("Failed to get client field...", _windowHandle); 
-                }
-                //Calculating effective window size
-                _windowmaxX = _windowRect.right - (_windowRect.left + 2*_cursor->offsetX);
-                _windowmaxY = _windowRect.bottom - (_windowRect.top + 2*_cursor->offsetY);
-            }
+
+            //=====================================SxPosition input functions================================================================//
             //Returns position of a next cell, when wrap is true - shifts next postion to new line.
             SxPosition calculateNextPosition(SxPosition currentPostion, FontHandler*& font, bool wrap = false){
                 updateFont(font);
@@ -78,13 +72,23 @@ namespace sxEditCore{
                 return (position.x/cellDefinition) + prevLinesIndexes;
 
             }
+            //Returns position of the character in the line (f.e in 'abc' 'b' is 2nd character)
+            int calculateLinePosition(SxPosition position){
+                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
+                return (position.x/gridCell);
+            }
+            //Returns index of char in list, based on position on screen. 
+            int calculateCachedIndex(SxPosition position){
+                return calculateIndex(position, _cachedFont);
+            }
+            //========================================Index input functions================================================================//
             //Returns position of char on screen by given index 
             SxPosition calculateCurrentPosition(int index){
                 updateFont(_cachedFont);
                 updateWindowMaxSizes();
                 int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
                 int tmp = 0;
-                
+
                 for(int i = 0; i < _charsInLine.size(); i++){
                     if(index > _charsInLine[i]){
                         tmp = i;
@@ -94,16 +98,16 @@ namespace sxEditCore{
                 return out;
 
             }
-            //Returns position of the character in the line (f.e in 'abc' 'b' is 2nd character)
-            int calculateLinePosition(SxPosition position){
-                int gridCell = (_cachedFont->getSize()+_cachedFont->_spaceBetweenChars);
-                return (position.x/gridCell);
-            }
-            
+            //===========================================Other functions================================================================//
 
-            //Returns index of char in list, based on position on screen. 
-            int calculateCachedIndex(SxPosition position){
-                return calculateIndex(position, _cachedFont);
+            //Updates current window max sizes. Recommended to call after any window size change.
+            void updateWindowMaxSizes(){
+                if(!GetClientRect(_windowHandle, &_windowRect)){
+                    throw new SXException("Failed to get client field...", _windowHandle); 
+                }
+                //Calculating effective window size
+                _windowmaxX = _windowRect.right - (_windowRect.left + 2*_cursor->offsetX);
+                _windowmaxY = _windowRect.bottom - (_windowRect.top + 2*_cursor->offsetY);
             }
             //Saves new fontHandler to class cache to later use.
             void updateFont(FontHandler*& font){
@@ -120,6 +124,29 @@ namespace sxEditCore{
                 }
                 else{
                     return _cachedFont->getSize() + _cachedFont->_spaceBetweenChars;
+                }
+            }
+            //Returns number of letters in given line
+            int getNumberOfCharsInGivenLine(int line, dataStructures::dlList* list){
+                if(list == nullptr) throw new SXException("Invalid list address passed to the getNumberOfChairsInGivenLine function.", _windowHandle);
+                if(line == 0 && _charsInLine.size() == 0) return list->getSize();
+
+
+                if(line >= _charsInLine.size()){
+                    if(line == _charsInLine.size()){
+                        //Total number of letters - number of letters in last line
+                        return list->getSize() - _charsInLine[_charsInLine.size()-1];
+                    }else{
+                        return 0;
+                    }
+
+                }else{
+                    if(line == 0){
+                        return _charsInLine[0] - 1;
+                    }else{
+                        //Number of letters to given line - to line - 1
+                        return _charsInLine[line] - _charsInLine[line-1] - 1;
+                    }
                 }
             }
 

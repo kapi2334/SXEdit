@@ -60,7 +60,7 @@ namespace sxEditCore{
                         break;
                     case 0x08: //Backspace
                         list.deleteNode(_windowUpdateHandler->getIndexOfActiveLetter()-1);
-                        _windowUpdateHandler->moveCursorByX(-1);
+                        _windowUpdateHandler->moveCursorByX(-1, &list);
                         break;
                     case 0x0D: //ENTER
                         _windowUpdateHandler ->moveCursorByY(1);           
@@ -71,7 +71,7 @@ namespace sxEditCore{
                     //Arrows
                     case 0x25: //LEFT
                         if(_windowUpdateHandler!= nullptr){
-                            _windowUpdateHandler->moveCursorByX(-1); //one to the left
+                            _windowUpdateHandler->moveCursorByX(-1, &list); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
@@ -85,7 +85,7 @@ namespace sxEditCore{
                         break;
                     case 0x27: //RIGHT
                         if(_windowUpdateHandler != nullptr){
-                            _windowUpdateHandler->moveCursorByX(1); //one to the left
+                            _windowUpdateHandler->moveCursorByX(1,&list); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
@@ -132,7 +132,7 @@ namespace sxEditCore{
                         if(checkIsKeyValid(key)){ 
                             WCHAR tmp = getCharFromWparam(key);
                             list.pushBack(tmp);  
-                            _windowUpdateHandler->moveCursorByX(1);
+                            _windowUpdateHandler->moveCursorByX(1, &list);
                         }
                 }
                 }catch(const SXException& e){
