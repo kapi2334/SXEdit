@@ -15,6 +15,15 @@ namespace sxEditCore{
             SxGrid* _localGrid = nullptr; //Text grid
             CursorHandler* _cursor = nullptr;
             int _spaceBetweenCursorAndLetter = 2;
+
+            // When the cursor moves to the next line, its X position remains the same.
+            // The only case when it changes is if the same X position can't be set on the new line (e.g., the new line is shorter).
+            // This variable stores the last cursor X position.
+            // This position is later used to restore the cursor's X when the line is long enough.
+            int _cachedXCursorPosition = 0;
+            //Indicates if the cursor's X position changed in the previous function call.
+            bool _isCursorXSwitched = false;
+
             void drawCursor(HDC& hdc){
                 _cursor->setCursorHeight(fontHandler->getSize());
                 _cursor->drawCursor(hdc); 
@@ -104,9 +113,31 @@ namespace sxEditCore{
                     setCursorY(line-1);
                 }
                 _cursor -> moveCursorByX(shift);
+                _cachedXCursorPosition = _cursor->getXPosition()/_localGrid->getCellWidth();
             }
             //Moves cursor by given Y. Cursor position is relative to grid, witch means y = 1 leads to cursor movement down by 1 cell.
-            void moveCursorByY(int y){
+            void moveCursorByY(int y, dataStructures::dlList* list = nullptr){
+                int shift = y * _localGrid->getCellWidth();
+                SxPosition newCursorPosition = SxPosition(_cursor->getXPosition(),_cursor->getYPosition()+shift);
+                int positionInLine = _localGrid->calculateLinePosition(newCursorPosition);
+                int line = _cursor->getYPosition()/_localGrid->getCellWidth();
+                if (list == nullptr) throw new SXException("Unable to get valid pointer to the memory list to check if cursor movement is valid.", _windowHandle);
+                std::cout<<"\nPosition in line: " << positionInLine << "\nNumber of chars in line: " << _localGrid->getNumberOfCharsInGivenLine(line+y, list) << "\n";
+                if(positionInLine > _localGrid->getNumberOfCharsInGivenLine(line+y, list)){
+                    _cachedXCursorPosition = newCursorPosition.x/_localGrid->getCellWidth();
+                    //Set cursor position at the end of the line
+                    setCursorX(_localGrid->getNumberOfCharsInGivenLine(line+y, list));
+                    setCursorY(line+y);
+                    _isCursorXSwitched = true;
+                    return;
+                }else{
+                    if(_isCursorXSwitched){
+                        setCursorX(_cachedXCursorPosition);
+                    }else{
+                        _cachedXCursorPosition = newCursorPosition.x/_localGrid->getCellWidth();
+                    }
+                    _isCursorXSwitched = false;
+                }
                 _cursor->moveCursorByY(y*(_localGrid->getCellWidth()));
             }
             //Sets cursor on given position on X axis. The position is relative to the grid.

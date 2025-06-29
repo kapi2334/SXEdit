@@ -49,8 +49,6 @@ namespace sxEditCore{
                     outY += gridCell; 
                     _charsInLine.push_back(calculateIndex(currentPostion,font)+1);
                 }
-                //Centering in the grid's cell
-                outX += 1;
 
                 currentPostion.x = outX;
                 currentPostion.y = outY;

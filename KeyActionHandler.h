@@ -68,7 +68,7 @@ namespace sxEditCore{
                         _windowUpdateHandler->moveCursorByX(-1, &list);
                         break;
                     case 0x0D: //ENTER
-                        _windowUpdateHandler ->moveCursorByY(1);           
+                        _windowUpdateHandler ->moveCursorByY(1, &list);           
                         _windowUpdateHandler->setCursorX(0);
                         
                         list.pushBack('\n');
@@ -83,7 +83,7 @@ namespace sxEditCore{
                         break;
                     case 0x26: //UP
                         if(_windowUpdateHandler != nullptr){
-                            _windowUpdateHandler->moveCursorByY(-1); //one to the left
+                            _windowUpdateHandler->moveCursorByY(-1, &list); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
@@ -97,7 +97,7 @@ namespace sxEditCore{
                         break;
                     case 0x28: //DOWN
                         if(_windowUpdateHandler != nullptr){
-                            _windowUpdateHandler->moveCursorByY(1); //one to the left
+                            _windowUpdateHandler->moveCursorByY(1,&list); //one to the left
                         }else{
                             throw SXException("Fatal error occurred while trying to get cursor handler: handler does not exist.");   
                         }
