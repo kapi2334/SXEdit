@@ -109,7 +109,7 @@ namespace sxEditCore{
                     return;
                 }else if(newCursorPosition.x < 0 && _localGrid->getNumberOfCharsInGivenLine(line-1,list) > 0){
                     //Move cursor up when upper line has chars and user is hitting left arrow in a wall
-                    setCursorX(_localGrid->getNumberOfCharsInGivenLine(line-1,list));
+                    setCursorX(_localGrid->getNumberOfCharsInGivenLine(line-1,list)+1);
                     setCursorY(line-1);
                 }
                 _cursor -> moveCursorByX(shift);

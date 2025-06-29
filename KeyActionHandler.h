@@ -48,7 +48,7 @@ namespace sxEditCore{
                 switch(key){
                     //case 0x09: //TAB
                     case 0x20: //SPACEBAR
-                       list.pushBack(' ');
+                        list.pushAtIndex(_windowUpdateHandler->getIndexOfActiveLetter(), ' ');
                        _windowUpdateHandler->moveCursorByX(1,&list);
                        break;
                     case 0x2D: //INSERT
@@ -68,10 +68,9 @@ namespace sxEditCore{
                         _windowUpdateHandler->moveCursorByX(-1, &list);
                         break;
                     case 0x0D: //ENTER
+                        list.pushAtIndex(_windowUpdateHandler->getIndexOfActiveLetter(), '\n');
                         _windowUpdateHandler ->moveCursorByY(1, &list);           
                         _windowUpdateHandler->setCursorX(0);
-                        
-                        list.pushBack('\n');
                         break;
                     //Arrows
                     case 0x25: //LEFT

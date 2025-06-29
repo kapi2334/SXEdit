@@ -188,8 +188,6 @@ namespace sxEditCore::dataStructures{
                 cachedNode.nodeAddress = newNode;
                 cachedNode.index = index;
                 return index;
-
-
             }
             //Deletes node with given index.
             char deleteNode(int index){
