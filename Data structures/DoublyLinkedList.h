@@ -161,6 +161,37 @@ namespace sxEditCore::dataStructures{
                 cachedNode.index = size - 1;
                 return size - 1;
             }
+            //Adds char(input) at specified position (index)
+            int pushAtIndex(int index, char input){
+                if(index > this->getSize()|| index < 0){
+                    std::cout<<"Error occured.\n";
+                    return -1;
+                }
+                if(index == 0){ //First element
+                    this->pushFront(input);
+                    return index;
+                }else if(index == this->getSize()){ //Last element
+                    this->pushBack(input);
+                    return index;
+                }
+                //In the middle
+                dlNode* newNode = new dlNode();
+                size++;
+                newNode->value = input;
+                dlNode* oldNode = this->getNode(index);
+                newNode-> next = oldNode;
+                newNode-> prev = oldNode -> prev;
+                oldNode->prev -> next = newNode;
+                oldNode->prev = newNode;
+                std::cout<<"Pushed in the middle.\n";
+                //Updating cache
+                cachedNode.nodeAddress = newNode;
+                cachedNode.index = index;
+                return index;
+
+
+            }
+            //Deletes node with given index.
             char deleteNode(int index){
                 //Obtaining node to delete
                 dlNode* node = getNode(index);

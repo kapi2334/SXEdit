@@ -136,8 +136,11 @@ namespace sxEditCore{
                     default:
                         if(checkIsKeyValid(key)){ 
                             WCHAR tmp = getCharFromWparam(key);
-                            list.pushBack(tmp);  
+                            //Pushing letter at active index.
+                            list.pushAtIndex(_windowUpdateHandler->getIndexOfActiveLetter(), tmp);
                             _windowUpdateHandler->moveCursorByX(1, &list);
+                            InvalidateRect(hwnd, NULL, true);
+                            UpdateWindow(hwnd);
                         }
                 }
                 }catch(const SXException& e){
