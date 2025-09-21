@@ -99,6 +99,7 @@ namespace sxEditCore{
                 return out;
 
             }
+            
             //===========================================Other functions================================================================//
 
             //Updates current window max sizes. Recommended to call after any window size change.
@@ -133,10 +134,12 @@ namespace sxEditCore{
             }
             //Returns number of letters in given line
             int getNumberOfCharsInGivenLine(int line, dataStructures::dlList* list){
-                if(list == nullptr) throw new SXException("Invalid list address passed to the getNumberOfChairsInGivenLine function.", _windowHandle);
-                if(line == 0 && _charsInLine.size() == 0) return list->getSize();
-
-
+                if(list == nullptr) throw SXException("Invalid list address passed to the getNumberOfChairsInGivenLine function.", _windowHandle);
+                //_charsInLine array represents how many chars are in given line - f.e. to get number of chars in 2nd line - _charsInLine[2]
+                if(_charsInLine.empty()){ 
+                    if(line == 0) return list->getSize();
+                    else return 0;
+                }
                 if(line >= _charsInLine.size()){
                     if(line == _charsInLine.size()){
                         //Total number of letters - number of letters in last line
@@ -144,15 +147,19 @@ namespace sxEditCore{
                     }else{
                         return 0;
                     }
-
                 }else{
                     if(line == 0){
-                        return _charsInLine[0] - 1;
+                        return _charsInLine[0] ;
                     }else{
                         //Number of letters to given line - to line - 1
-                        return _charsInLine[line] - _charsInLine[line-1] - 1;
+                        return _charsInLine[line] - _charsInLine[line-1] ;
                     }
                 }
+            }
+            //Returns index of a char in the list, based on position on the screen scaled to the grid.
+            int calculateScaledGridIndex(int x, int y){
+                SxPosition tmp = SxPosition(x*getCellWidth(),y*getCellWidth());
+                return calculateCachedIndex(tmp);
             }
 
     };

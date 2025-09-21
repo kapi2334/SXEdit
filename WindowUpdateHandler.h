@@ -15,6 +15,7 @@ namespace sxEditCore{
             SxGrid* _localGrid = nullptr; //Text grid
             CursorHandler* _cursor = nullptr;
             int _spaceBetweenCursorAndLetter = 2;
+            bool _debugMode = true;
 
             // When the cursor moves to the next line, its X position remains the same.
             // The only case when it changes is if the same X position can't be set on the new line (e.g., the new line is shorter).
@@ -47,7 +48,9 @@ namespace sxEditCore{
                     if(buffer == inputList.errorChar) break;
                     if(buffer == '\n'){
                         moveText = true;
+                        if(_debugMode == true) buffer = 'N';
                     }
+                    if(buffer == ' ' && _debugMode == true) buffer = 'S';
                     tmp[0] = buffer;
                     tmp[1] = '\0';
                     //SxPosition pos = _localGrid->calculatePos(i,fontHandler);
@@ -107,23 +110,47 @@ namespace sxEditCore{
                             setCursorY(line+1);
                         }
                     return;
-                }else if(newCursorPosition.x < 0 && _localGrid->getNumberOfCharsInGivenLine(line-1,list) > 0){
-                    //Move cursor up when upper line has chars and user is hitting left arrow in a wall
+                //}else if(newCursorPosition.x < 0 && _localGrid->getNumberOfCharsInGivenLine(line-1,list) > 0){
+                } else if(newCursorPosition.x < 0 && line - 1 >= 0){
+                    //If the upper line contains characters and the user presses the left arrow key, move the cursor up
                     setCursorX(_localGrid->getNumberOfCharsInGivenLine(line-1,list)+1);
                     setCursorY(line-1);
                 }
                 _cursor -> moveCursorByX(shift);
                 _cachedXCursorPosition = _cursor->getXPosition()/_localGrid->getCellWidth();
             }
-            //Moves cursor by given Y. Cursor position is relative to grid, witch means y = 1 leads to cursor movement down by 1 cell.
+            //Moves the cursor by the given Y.The cursor position is relative to grid, which means y = 1 moves the cursor down by 1 cell.
             void moveCursorByY(int y, dataStructures::dlList* list = nullptr){
+
+                if (list == nullptr) throw new SXException("Unable to get valid pointer to the memory list to check if cursor movement is valid.", _windowHandle);
+
+                //Calculating new cursor position
                 int shift = y * _localGrid->getCellWidth();
                 SxPosition newCursorPosition = SxPosition(_cursor->getXPosition(),_cursor->getYPosition()+shift);
+
+                //Calculating line data: position of the cursor in a new line and the line number 
                 int positionInLine = _localGrid->calculateLinePosition(newCursorPosition);
                 int line = _cursor->getYPosition()/_localGrid->getCellWidth();
-                if (list == nullptr) throw new SXException("Unable to get valid pointer to the memory list to check if cursor movement is valid.", _windowHandle);
-                std::cout<<"\nPosition in line: " << positionInLine << "\nNumber of chars in line: " << _localGrid->getNumberOfCharsInGivenLine(line+y, list) << "\n";
-                if(positionInLine > _localGrid->getNumberOfCharsInGivenLine(line+y, list)){
+                //Calculating number of characters in the targetted line 
+                int charsInNewLine = _localGrid->getNumberOfCharsInGivenLine(line+y, list);
+                
+
+                //Move the cursor to the next line only when last character in the previous line is '\n'
+                int numberOfCharsInPrevoiusLine = _localGrid->getNumberOfCharsInGivenLine(line+y-1,list);
+                if(numberOfCharsInPrevoiusLine == 0 && y > 0) return; //If last line is empty - dont let move cursor to the other one. 
+                int index = _localGrid->calculateScaledGridIndex(numberOfCharsInPrevoiusLine, line+y-1) ;
+                index--;
+                if(index == -1) {
+                    return;
+                }
+                std::cout << index << " char is: " << list->get(index) << "/" << _localGrid->getNumberOfCharsInGivenLine(line+y-1,list) << "\n";
+                if(list->get(index) !='\n' && shift > 0){
+                    std::cout << "Last character wasnt new line - returned.";
+                    return;
+                }
+                //If current X position, would result in showing the cursor outside of text area - set the cursor X to the last character's X.
+                if(positionInLine > charsInNewLine){
+                    //Save last cursor position to cache.
                     _cachedXCursorPosition = newCursorPosition.x/_localGrid->getCellWidth();
                     //Set cursor position at the end of the line
                     setCursorX(_localGrid->getNumberOfCharsInGivenLine(line+y, list));
@@ -131,9 +158,11 @@ namespace sxEditCore{
                     _isCursorXSwitched = true;
                     return;
                 }else{
+                    //If X position was switched last time, set current position to cashed value.
                     if(_isCursorXSwitched){
                         setCursorX(_cachedXCursorPosition);
                     }else{
+                        //If not, save current X position to cashe.
                         _cachedXCursorPosition = newCursorPosition.x/_localGrid->getCellWidth();
                     }
                     _isCursorXSwitched = false;

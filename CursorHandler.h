@@ -10,7 +10,7 @@ namespace sxEditCore{
             int x = 0;
             int y = 0;
             //Defines active cursor style
-            int _type = 0;
+            int _type = 1;
             /* 0 = |
              * 1 = _
              * */
@@ -83,16 +83,11 @@ namespace sxEditCore{
 
             //Sets new Y param 
             bool updateCursorY(int newY){
-                //Making sure window sizes collected in variables are up to date.
-                updateWindowSizes();
-                int effectiveNewY = newY ; 
-                //Checking if cursor will not go out of the window filed.
-                /*if( effectiveNewY >= 0 && effectiveNewY <= _windowmaxY){
-                    y = effectiveNewY;
+                if(newY > 0){
+                    y = newY;
                     return true;
-                }*/
-                y = effectiveNewY;
-                return true;
+                }
+                return false;
             } 
 
             //Moves cursor by X value
@@ -110,8 +105,6 @@ namespace sxEditCore{
 
             //Moves cursor by Y value
             bool moveCursorByY(int y){
-                //Making sure window sizes collected in variables are up to date.
-                updateWindowSizes();
                 //Checking if cursor will not go out of the window filed.
                 if((this->y + y) >= 0){
                         this->y += y;

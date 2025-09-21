@@ -22,7 +22,7 @@ namespace sxEditCore::dataStructures{
             //TO DO: CALCULATING THE THERSHOLD VALUE DEPENDING ON THE SIZE VARIABLE
             int cacheTreshold = 20;
             dlCachedNode cachedNode; 
-            
+
             dlNode *First; //Pointer to first node (head)
             dlNode *Last; //Pointer to last node (tail) 
 
@@ -36,36 +36,36 @@ namespace sxEditCore::dataStructures{
             dlNode* tryToCache(int nodeIndex){
                 if(cachedNode.nodeAddress == nullptr ) return nullptr; //If cahed node doesnt exist
                 if(nodeIndex >= size || nodeIndex < 0) return nullptr; //If index is outside the array
-                    if(std::abs(nodeIndex - cachedNode.index) < cacheTreshold){ //Success - finding node using one in cashe can be done.
-                        //Cashe types
-                        if(nodeIndex - cachedNode.index > 0 ){
-                            //Iterating to node from cached one using next property.
-                            
-                            while(cachedNode.index < nodeIndex){
-                               cachedNode.index++;
-                               cachedNode.nodeAddress = cachedNode.nodeAddress->next;
-                            }
-                            return cachedNode.nodeAddress;
-                        }
-                        else if(nodeIndex - cachedNode.index == 0 ){
-                            //Requested node its that one in the cache
-                            return cachedNode.nodeAddress;
-                        }
-                        else if(nodeIndex - cachedNode.index < 0 ){
-                            //Iterating to node from cahed one using prev property.
+                if(std::abs(nodeIndex - cachedNode.index) < cacheTreshold){ //Success - finding node using one in cashe can be done.
+                                                                            //Cashe types
+                    if(nodeIndex - cachedNode.index > 0 ){
+                        //Iterating to node from cached one using next property.
 
-                            while(cachedNode.index > nodeIndex){
-                                
-                               cachedNode.index--;
-                               cachedNode.nodeAddress = cachedNode.nodeAddress->prev;
-                            }
-                            return cachedNode.nodeAddress;
+                        while(cachedNode.index < nodeIndex){
+                            cachedNode.index++;
+                            cachedNode.nodeAddress = cachedNode.nodeAddress->next;
                         }
-
+                        return cachedNode.nodeAddress;
                     }
+                    else if(nodeIndex - cachedNode.index == 0 ){
+                        //Requested node its that one in the cache
+                        return cachedNode.nodeAddress;
+                    }
+                    else if(nodeIndex - cachedNode.index < 0 ){
+                        //Iterating to node from cahed one using prev property.
+
+                        while(cachedNode.index > nodeIndex){
+
+                            cachedNode.index--;
+                            cachedNode.nodeAddress = cachedNode.nodeAddress->prev;
+                        }
+                        return cachedNode.nodeAddress;
+                    }
+
+                }
                 return nullptr;        
-                
-                
+
+
             }
             /*Returns address of node which is located at given index.
              *Function is optimized to begin node finding operation from most efficient node. 
@@ -81,23 +81,23 @@ namespace sxEditCore::dataStructures{
                 //Reading from cached node
                 dlNode* outNode = tryToCache(index);
                 if(outNode != nullptr){
-                //Success
+                    //Success
                     return outNode;
                 }
                 else{
-                //Failed
+                    //Failed
                     if(index <= size/2){
-                    //Targeted node is closer to the front of the list 
+                        //Targeted node is closer to the front of the list 
                         outNode = First;
                         for(int i = 0; i < index; i++){
                             outNode = outNode->next;
                         }
                         return outNode;
-                        
-                    
+
+
                     }
                     else{
-                    //Targeted node is closer to the end of the list
+                        //Targeted node is closer to the end of the list
                         outNode = Last;
                         for(int i = size - 1; i > index; i--){
                             outNode = outNode->prev;
@@ -105,7 +105,7 @@ namespace sxEditCore::dataStructures{
                         return outNode;
                     }
                 }
-                
+
 
             }
 
@@ -117,7 +117,10 @@ namespace sxEditCore::dataStructures{
                 First = nullptr;
                 Last = nullptr;
             }
-            
+            ~dlList(){
+                this->clear();
+            }
+
             //Adds value (input) to the front of the List
             int pushFront(char input){
                 dlNode *newNode = new dlNode;
@@ -161,8 +164,8 @@ namespace sxEditCore::dataStructures{
                 cachedNode.index = size - 1;
                 return size - 1;
             }
-            //Adds char(input) at specified position (index)
             int pushAtIndex(int index, char input){
+                //Adds char(input) at specified position (index)
                 if(index > this->getSize()|| index < 0){
                     std::cout<<"Error occured.\n";
                     return -1;
@@ -179,10 +182,17 @@ namespace sxEditCore::dataStructures{
                 size++;
                 newNode->value = input;
                 dlNode* oldNode = this->getNode(index);
+                /*
+                   newNode->next = oldNode->next;
+                   newNode->prev = oldNode;
+                   oldNode->next->prev = newNode;
+                   oldNode->next = newNode;
+                   */
                 newNode-> next = oldNode;
                 newNode-> prev = oldNode -> prev;
                 oldNode->prev -> next = newNode;
                 oldNode->prev = newNode;
+
                 std::cout<<"Pushed in the middle.\n";
                 //Updating cache
                 cachedNode.nodeAddress = newNode;
@@ -240,7 +250,7 @@ namespace sxEditCore::dataStructures{
                 if(size != 0 && Last != nullptr){
                     //Deleting objects 
                     while(Last != nullptr){
-                    dlNode* node = Last;
+                        dlNode* node = Last;
                         Last = node->prev;
                         delete node;
                         node = nullptr;
@@ -255,6 +265,53 @@ namespace sxEditCore::dataStructures{
             }
             int getSize(){
                 return size;
+            }
+
+            // Konstruktor kopiujący
+            dlList(const dlList& other) : dlList() {
+                dlNode* curr = other.First;
+                while (curr != nullptr) {
+                    pushBack(curr->value);
+                    curr = curr->next;
+                }
+            }
+
+            // Operator przypisania kopiującego
+            dlList& operator=(const dlList& other) {
+                if (this == &other) return *this;
+                clear();
+                dlNode* curr = other.First;
+                while (curr != nullptr) {
+                    pushBack(curr->value);
+                    curr = curr->next;
+                }
+                return *this;
+            }
+
+            // Konstruktor przenoszący
+            dlList(dlList&& other) noexcept 
+                : First(other.First), Last(other.Last), size(other.size), cachedNode(other.cachedNode) {
+                    other.First = nullptr;
+                    other.Last = nullptr;
+                    other.size = 0;
+                    other.cachedNode.nodeAddress = nullptr;
+                    other.cachedNode.index = -1;
+                }
+
+            // Operator przypisania przenoszącego
+            dlList& operator=(dlList&& other) noexcept {
+                if (this == &other) return *this;
+                clear();
+                First = other.First;
+                Last = other.Last;
+                size = other.size;
+                cachedNode = other.cachedNode;
+                other.First = nullptr;
+                other.Last = nullptr;
+                other.size = 0;
+                other.cachedNode.nodeAddress = nullptr;
+                other.cachedNode.index = -1;
+                return *this;
             }
 
     }; 
