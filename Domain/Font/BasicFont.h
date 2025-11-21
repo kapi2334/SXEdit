@@ -1,4 +1,5 @@
 #pragma once;
+#include "../IPosition.h";
 
 namespace sxEditCore::Font
 {
@@ -6,19 +7,22 @@ namespace sxEditCore::Font
     class BasicFont : public sxEditCore::Font::IFont<T>
     {
     private:
-        unsigned int _fontSize = 12;
+        /**
+         * Represents overall font size (width,height) (e.g., for monospaced fonts, width and height are equal).
+         */
+        IPosition _fontSize = new IPosition(12, 12);
         T *_systemFontObject = nullptr;
 
     public:
-        unsigned int getFontOverallSize() const
+        IPosition *getFontSize() const
         {
-            return this->_fontSize;
+            return &this->_fontSize;
         }
         T *getSystemFontObject()
         {
             return this->_systemFontObject;
         }
-        BasicFont(unsigned int size, T *systemFontObject)
+        BasicFont(IPosition &fontSize, T *systemFontObject)
         {
             this->_fontSize = fontSize;
             if (systemFontObject == nullptr)

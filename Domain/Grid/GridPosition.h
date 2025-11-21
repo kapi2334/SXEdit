@@ -40,6 +40,14 @@ namespace sxEditCore::Grid
                 throw new sxException(errMsg, ErrorLevel::Warning, "OUTOFBOUNDS01");
             }
         }
+        virtual int getX() const
+        {
+            return x;
+        }
+        virtual int getY() const
+        {
+            return y;
+        }
         /*
          * Converts the current GridPosition to a SystemPosition representation.
          * Provided grid object handles the conversion.
