@@ -8,45 +8,45 @@ namespace sxEditCore
 {
     class SystemPosition : public IPosition
     {
-        int _x = 0;
-        int _y = 0;
+        int x = 0;
+        int y = 0;
 
     public:
-        SystemPosition(int _x, int _y)
+        SystemPosition(int x, int y)
         {
-            this->update(_x, _y);
+            this->update(x, y);
         }
         SystemPosition()
         {
-            this->_x = 0;
-            this->_y = 0;
+            this->x = 0;
+            this->y = 0;
         }
         /*
-         * Updates the position to the given (_x, _y) coordinates.
+         * Updates the position to the given (x, y) coordinates.
          * Returns true if the update succeeded, false otherwise.
          */
-        bool update(int _x, int _y)
+        bool update(int x, int y)
         {
-            if (_x >= 0 && _y >= 0)
+            if (x >= 0 && y >= 0)
             {
-                this->_x = _x;
-                this->_y = _y;
+                this->x = x;
+                this->y = y;
                 return true;
             }
             else
             {
-                std::string errMsg = "Given coordinates to the SystemPosition are invalid: _x: " + std::to_string(_x) + "_y: " + std::to_string(_y) + ".";
+                std::string errMsg = "Given coordinates to the SystemPosition are invalid: x: " + std::to_string(x) + "y: " + std::to_string(y) + ".";
                 throw new sxException(errMsg, ErrorLevel::Warning, "OUTOFBOUNDS01");
             }
         }
         virtual int getX() const
         {
-            return _x;
+            return x;
         }
 
         virtual int getY() const
         {
-            return _y;
+            return y;
         }
         /*
          * Converts the current SystemPosition to a GridPosition representation.
@@ -59,7 +59,7 @@ namespace sxEditCore
         }
         bool operator==(const SystemPosition &other) const
         {
-            if (this->_x == other._x && this->_y == other._y)
+            if (this->x == other.x && this->y == other.y)
             {
                 return true;
             }

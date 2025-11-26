@@ -10,67 +10,67 @@ namespace sxEditCore::Font
         /**
          * Represents overall font size (width,height) (e.g., for monospaced fonts, width and height are equal).
          */
-        IPosition _fontSize = new IPosition(12, 12);
-        T *_systemFontObject = nullptr;
+        IPosition fontSize = new IPosition(12, 12);
+        T *systemFontObject = nullptr;
 
     public:
         IPosition *getFontSize() const
         {
-            return &this->_fontSize;
+            return &this->fontSize;
         }
         T *getSystemFontObject()
         {
-            return this->_systemFontObject;
+            return this->systemFontObject;
         }
         BasicFont(IPosition &fontSize, T *systemFontObject)
         {
-            this->_fontSize = fontSize;
+            this->fontSize = fontSize;
             if (systemFontObject == nullptr)
             {
                 systemFontObject = new T();
             }
-            this->_systemFontObject = systemFontObject;
+            this->systemFontObject = systemFontObject;
         }
         ~BasicFont()
         {
-            if (this->_systemFontObject != nullptr)
+            if (this->systemFontObject != nullptr)
             {
-                delete this->_systemFontObject;
-                this->_systemFontObject = nullptr;
+                delete this->systemFontObject;
+                this->systemFontObject = nullptr;
             }
         }
         BasicFont(BasicFont &other)
         {
-            this->_fontSize = other._fontSize;
-            this->_systemFontObject = other._systemFontObject;
+            this->fontSize = other.fontSize;
+            this->systemFontObject = other.systemFontObject;
         }
         BasicFont &operator=(const BasicFont &other)
         {
             if (this != &other)
             {
-                this->_fontSize = other._fontSize;
-                this->_systemFontObject = other._systemFontObject;
-                delete this->_systemFontObject;
-                this->_systemFontObject = nullptr;
+                this->fontSize = other.fontSize;
+                this->systemFontObject = other.systemFontObject;
+                delete this->systemFontObject;
+                this->systemFontObject = nullptr;
             }
             return *this;
         }
         BasicFont(BasicFont &&other) noexcept
         {
-            this->_fontSize = other._fontSize;
-            this->_systemFontObject = other._systemFontObject;
-            delete this->_systemFontObject;
-            this->_systemFontObject = nullptr;
+            this->fontSize = other.fontSize;
+            this->systemFontObject = other.systemFontObject;
+            delete this->systemFontObject;
+            this->systemFontObject = nullptr;
             this->fontSize = 0;
         }
         BasicFont &operator=(BasicFont &&other) noexcept
         {
             if (this != &other)
             {
-                this->_fontSize = other._fontSize;
-                this->_systemFontObject = other._systemFontObject;
-                delete this->_systemFontObject;
-                this->_systemFontObject = nullptr;
+                this->fontSize = other.fontSize;
+                this->systemFontObject = other.systemFontObject;
+                delete this->systemFontObject;
+                this->systemFontObject = nullptr;
             }
             return *this;
         }

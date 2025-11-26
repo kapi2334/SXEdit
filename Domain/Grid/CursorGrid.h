@@ -11,23 +11,23 @@ namespace sxEditCore::Grid
         /**
          * Represents the size of the grid in system coordinates - shoud be updated when window changes size.
          */
-        SystemPosition _gridSize = SystemPosition(0, 0);
+        SystemPosition gridSize = SystemPosition(0, 0);
         /**
          * Pointer to the font object. It's size is uised to calculate cell size.
          */
-        sxEditCore::Font::IFont<std::any> *_fontReferenceObject = nullptr;
+        sxEditCore::Font::IFont<std::any> *fontReferenceObject = nullptr;
         /**
          * Represents size of a single letter in the grid (oncluding margins).
          */
-        GridPosition _singleCellSize = GridPosition(0, 0);
+        GridPosition singleCellSize = GridPosition(0, 0);
         /**
          *  Margin between letters in the grid cells.
          */
-        sxEditCore::Margin _marginBetweenLetters = sxEditCore::Margin(2, 2, 2, 2);
+        sxEditCore::Margin marginBetweenLetters = sxEditCore::Margin(2, 2, 2, 2);
         /**
          *  Margin between text area and border of the grid.
          */
-        sxEditCore::Margin _marginBetweenTextAreaAndBorder = sxEditCore::Margin(4, 4, 4, 4);
+        sxEditCore::Margin marginBetweenTextAreaAndBorder = sxEditCore::Margin(4, 4, 4, 4);
 
     public:
         /*
@@ -50,13 +50,13 @@ namespace sxEditCore::Grid
          */
         virtual sxEditCore::SystemPosition updateGridSize(sxEditCore::SystemPosition &newSize)
         {
-            _gridSize = newSize;
-            return _gridSize;
+            gridSize = newSize;
+            return gridSize;
         }
         GridPosition *getSingleCellSize()
         {
-            int cellWidth = _fontReferenceObject->getFontOverallSize()->getX() + _marginBetweenLetters.left;
-            int cellHeight = _fontReferenceObject->getFontOverallSize()->getY() + _marginBetweenLetters.top;
+            int cellWidth = fontReferenceObject->getFontOverallSize()->getX() + marginBetweenLetters.left;
+            int cellHeight = fontReferenceObject->getFontOverallSize()->getY() + marginBetweenLetters.top;
             return &GridPosition(cellWidth, cellHeight);
         }
         /*
@@ -74,14 +74,14 @@ namespace sxEditCore::Grid
                     2 - Margin between letters
                     L - Lingle letter
                 */
-        CursorGrid(sxEditCore::Font::IFont<std::any> *fontObject = nullptr, SystemPosition initialGridSize = SystemPosition(0, 0), sxEditCore::Margin &marginBetweenLetters, sxEditCore::Margin &marginBetweenTextAreaAndBorder) : _gridSize(initialGridSize)
+        CursorGrid(sxEditCore::Font::IFont<std::any> *fontObject = nullptr, SystemPosition initialGridSize = SystemPosition(0, 0), sxEditCore::Margin &marginBetweenLetters, sxEditCore::Margin &marginBetweenTextAreaAndBorder) : gridSize(initialGridSize)
         {
             if (fontObject == nullptr)
             {
                 throw new sxException("Given font object for CursorGrid is null.", ErrorLevel::Critical, "PTR01");
             }
-            this->_fontReferenceObject = fontObject;
-            this->_gridSize = initialGridSize;
+            this->fontReferenceObject = fontObject;
+            this->gridSize = initialGridSize;
         }
     };
 }
