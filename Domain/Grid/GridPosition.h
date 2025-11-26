@@ -8,10 +8,10 @@ namespace sxEditCore::Grid
     class GridPosition : public sxEditCore::IPosition
     {
     public:
-        int x = 0;
-        int y = 0;
+        float x = 0;
+        float y = 0;
 
-        GridPosition(int x, int y)
+        GridPosition(float x, float y)
         {
             update(x, y);
         }
@@ -26,7 +26,7 @@ namespace sxEditCore::Grid
          * Updates the position to the given (x, y) coordinates.
          * Returns true if the update succeeded, false otherwise.
          */
-        bool update(int newX, int newY)
+        bool update(float newX, float newY)
         {
             if (x >= 0 && y >= 0)
             {
@@ -40,11 +40,11 @@ namespace sxEditCore::Grid
                 throw new sxException(errMsg, ErrorLevel::Warning, "OUTOFBOUNDS01");
             }
         }
-        virtual int getX() const
+        virtual float getX() const
         {
             return x;
         }
-        virtual int getY() const
+        virtual float getY() const
         {
             return y;
         }

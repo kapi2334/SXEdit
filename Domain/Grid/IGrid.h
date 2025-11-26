@@ -29,7 +29,7 @@ namespace sxEditCore::Grid
          * @brief  Gets the size of a single cell in the grid.
          * @return GridPosition*
          */
-        virtual GridPosition *getSingleCellSize() = 0;
+        virtual SystemPosition *getSingleCellSize() = 0;
         virtual ~IGrid() = default;
     };
 }

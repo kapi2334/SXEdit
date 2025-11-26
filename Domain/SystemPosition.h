@@ -8,11 +8,11 @@ namespace sxEditCore
 {
     class SystemPosition : public IPosition
     {
-        int x = 0;
-        int y = 0;
+        float x = 0;
+        float y = 0;
 
     public:
-        SystemPosition(int x, int y)
+        SystemPosition(float x, float y)
         {
             this->update(x, y);
         }
@@ -25,7 +25,7 @@ namespace sxEditCore
          * Updates the position to the given (x, y) coordinates.
          * Returns true if the update succeeded, false otherwise.
          */
-        bool update(int x, int y)
+        bool update(float x, float y)
         {
             if (x >= 0 && y >= 0)
             {
@@ -39,12 +39,12 @@ namespace sxEditCore
                 throw new sxException(errMsg, ErrorLevel::Warning, "OUTOFBOUNDS01");
             }
         }
-        virtual int getX() const
+        virtual float getX() const
         {
             return x;
         }
 
-        virtual int getY() const
+        virtual float getY() const
         {
             return y;
         }

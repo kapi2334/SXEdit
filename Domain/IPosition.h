@@ -12,8 +12,8 @@ namespace sxEditCore
          * Updates the position to the given (x, y) coordinates.
          * Returns true if the update succeeded, false otherwise.
          */
-        virtual bool update(int x, int y) = 0;
-        virtual int getX() const = 0;
-        virtual int getY() const = 0;
+        virtual bool update(float x, float y) = 0;
+        virtual float getX() const = 0;
+        virtual float getY() const = 0;
     };
 }

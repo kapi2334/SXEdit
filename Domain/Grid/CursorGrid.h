@@ -36,13 +36,23 @@ namespace sxEditCore::Grid
          */
         sxEditCore::SystemPosition getRealObjectValue(const GridPosition &gridPos)
         {
+            SystemPosition singleCellSize = *getSingleCellSize();
+            float sysX = gridPos.getX() * singleCellSize.getX();
+            float sysY = gridPos.getY() * singleCellSize.getY();
+            return SystemPosition(sysX, sysY);
         }
         /*
          * Converts system coordinates (sysX, sysY) to grid coordinates.
          * Returns a GridPosition object representing the grid coordinates.
          */
-        virtual sxEditCore::Grid::GridPosition convertValueOnGrid(sxEditCore::IPosition &initialPosition)
+        virtual sxEditCore::Grid::GridPosition convertValueOnGrid(sxEditCore::SystemPosition &initialPosition)
         {
+            SystemPosition singleCellSize = *getSingleCellSize();
+            float singleCellWidth = singleCellSize.getX();
+            float singleCellHeight = singleCellSize.getY();
+            float valueOnGridX = initialPosition.getX() / singleCellWidth;
+            float valueOnGridY = initialPosition.getY() / singleCellHeight;
+            return GridPosition(valueOnGridX, valueOnGridY);
         }
         /*
          * Updates the grid size to the given newSize (in system coordinates).
@@ -53,11 +63,15 @@ namespace sxEditCore::Grid
             gridSize = newSize;
             return gridSize;
         }
-        GridPosition *getSingleCellSize()
+        /**
+         * @brief  Gets the size of a single cell in the grid.
+         * @return SystemPosition*
+         */
+        SystemPosition *getSingleCellSize()
         {
-            int cellWidth = fontReferenceObject->getFontOverallSize()->getX() + marginBetweenLetters.left;
-            int cellHeight = fontReferenceObject->getFontOverallSize()->getY() + marginBetweenLetters.top;
-            return &GridPosition(cellWidth, cellHeight);
+            float cellWidth = fontReferenceObject->getFontOverallSize()->getX() + marginBetweenLetters.left;
+            float cellHeight = fontReferenceObject->getFontOverallSize()->getY() + marginBetweenLetters.top;
+            return &SystemPosition(cellWidth, cellHeight);
         }
         /*
         Simulation of a cursor grid with margins.
