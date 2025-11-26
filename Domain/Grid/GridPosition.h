@@ -1,7 +1,7 @@
 #pragma once;
-#include "../IPosition.h";
+#include "../IPosition.h"
 #include "../SystemPosition.h"
-#include "../SxException.h";
+#include "../SxException.h"
 #include <string>
 namespace sxEditCore::Grid
 {
